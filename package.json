@@ -1,5 +1,5 @@
 {
-  "name": "TODO",
+  "name": "empowered.dataverse.webresources",
   "scripts": {
     "prepare": "husky"
   },
@@ -66,10 +66,10 @@
       ],
       "@semantic-release/github",
     ],
-    "repositoryUrl": "TODO",
+    "repositoryUrl": "https://github.com/3mpowered/Dataverse.Webresources",
     "includeSymbols": true,
     "usePackageVersion": true,
-    "projectPath": "./src/TODO"
+    "projectPath": "./src/Empowered.Dataverse.Webresources/Empowered.Dataverse.Webresources.csproj"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.4.1",

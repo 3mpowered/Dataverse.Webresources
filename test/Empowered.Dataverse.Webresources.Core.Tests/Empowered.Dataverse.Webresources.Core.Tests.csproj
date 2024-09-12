@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+  
+    <ItemGroup>
+        <Using Include="Xunit"/>
+    </ItemGroup>
+  
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Empowered.Dataverse.Webresources.Core\Empowered.Dataverse.Webresources.Core.csproj" />
+    </ItemGroup>
+  
+    <ItemGroup>
+      <PackageReference Include="TestableIO.System.IO.Abstractions.TestingHelpers" Version="21.0.29" />
+    </ItemGroup>
+
+</Project>
