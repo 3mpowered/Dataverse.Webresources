@@ -19,7 +19,9 @@ public class RegularExpressionCollectionAttribute : RegularExpressionAttribute
     public override bool IsValid(object? value)
     {
         if (value is not IEnumerable<string> collection)
+        {
             return false;
+        }
 
         return collection.All(val => Regex.IsMatch(val, Pattern));
     }

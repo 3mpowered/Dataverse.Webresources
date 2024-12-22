@@ -536,7 +536,11 @@ namespace Empowered.Dataverse.Webresources.Model
 			public const string Referencedlk_systemuser_modifiedonbehalfby = "Referencedlk_systemuser_modifiedonbehalfby";
 			public const string Referencedlk_systemuserbase_createdby = "Referencedlk_systemuserbase_createdby";
 			public const string Referencedlk_systemuserbase_modifiedby = "Referencedlk_systemuserbase_modifiedby";
+			public const string lk_webresourcebase_createdonbehalfby = "lk_webresourcebase_createdonbehalfby";
+			public const string lk_webresourcebase_modifiedonbehalfby = "lk_webresourcebase_modifiedonbehalfby";
 			public const string Referenceduser_parent_user = "Referenceduser_parent_user";
+			public const string webresource_createdby = "webresource_createdby";
+			public const string webresource_modifiedby = "webresource_modifiedby";
 			public const string Referencinglk_systemuser_createdonbehalfby = "lk_systemuser_createdonbehalfby";
 			public const string Referencinglk_systemuser_modifiedonbehalfby = "lk_systemuser_modifiedonbehalfby";
 			public const string Referencinglk_systemuserbase_createdby = "lk_systemuserbase_createdby";
@@ -3075,6 +3079,38 @@ namespace Empowered.Dataverse.Webresources.Model
 		}
 		
 		/// <summary>
+		/// 1:N lk_webresourcebase_createdonbehalfby
+		/// </summary>
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("lk_webresourcebase_createdonbehalfby")]
+		public System.Collections.Generic.IEnumerable<Empowered.Dataverse.Webresources.Model.WebResource> lk_webresourcebase_createdonbehalfby
+		{
+			get
+			{
+				return this.GetRelatedEntities<Empowered.Dataverse.Webresources.Model.WebResource>("lk_webresourcebase_createdonbehalfby", null);
+			}
+			set
+			{
+				this.SetRelatedEntities<Empowered.Dataverse.Webresources.Model.WebResource>("lk_webresourcebase_createdonbehalfby", null, value);
+			}
+		}
+		
+		/// <summary>
+		/// 1:N lk_webresourcebase_modifiedonbehalfby
+		/// </summary>
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("lk_webresourcebase_modifiedonbehalfby")]
+		public System.Collections.Generic.IEnumerable<Empowered.Dataverse.Webresources.Model.WebResource> lk_webresourcebase_modifiedonbehalfby
+		{
+			get
+			{
+				return this.GetRelatedEntities<Empowered.Dataverse.Webresources.Model.WebResource>("lk_webresourcebase_modifiedonbehalfby", null);
+			}
+			set
+			{
+				this.SetRelatedEntities<Empowered.Dataverse.Webresources.Model.WebResource>("lk_webresourcebase_modifiedonbehalfby", null, value);
+			}
+		}
+		
+		/// <summary>
 		/// 1:N user_parent_user
 		/// </summary>
 		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("user_parent_user", Microsoft.Xrm.Sdk.EntityRole.Referenced)]
@@ -3087,6 +3123,38 @@ namespace Empowered.Dataverse.Webresources.Model
 			set
 			{
 				this.SetRelatedEntities<Empowered.Dataverse.Webresources.Model.SystemUser>("user_parent_user", Microsoft.Xrm.Sdk.EntityRole.Referenced, value);
+			}
+		}
+		
+		/// <summary>
+		/// 1:N webresource_createdby
+		/// </summary>
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("webresource_createdby")]
+		public System.Collections.Generic.IEnumerable<Empowered.Dataverse.Webresources.Model.WebResource> webresource_createdby
+		{
+			get
+			{
+				return this.GetRelatedEntities<Empowered.Dataverse.Webresources.Model.WebResource>("webresource_createdby", null);
+			}
+			set
+			{
+				this.SetRelatedEntities<Empowered.Dataverse.Webresources.Model.WebResource>("webresource_createdby", null, value);
+			}
+		}
+		
+		/// <summary>
+		/// 1:N webresource_modifiedby
+		/// </summary>
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("webresource_modifiedby")]
+		public System.Collections.Generic.IEnumerable<Empowered.Dataverse.Webresources.Model.WebResource> webresource_modifiedby
+		{
+			get
+			{
+				return this.GetRelatedEntities<Empowered.Dataverse.Webresources.Model.WebResource>("webresource_modifiedby", null);
+			}
+			set
+			{
+				this.SetRelatedEntities<Empowered.Dataverse.Webresources.Model.WebResource>("webresource_modifiedby", null, value);
 			}
 		}
 		

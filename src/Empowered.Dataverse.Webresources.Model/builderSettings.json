@@ -15,7 +15,8 @@
         "publisher",
         "solution",
         "solutioncomponent",
-        "systemuser"
+        "systemuser",
+        "webresource"
     ],
     "messageNamesFilter": [
         "PublishAllAsync"

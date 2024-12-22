@@ -31,6 +31,27 @@ namespace Empowered.Dataverse.Webresources.Model
 		Internal = 2,
 	}
 	
+	[System.Runtime.Serialization.DataContractAttribute()]
+	[System.CodeDom.Compiler.GeneratedCodeAttribute("Dataverse Model Builder", "2.0.0.11")]
+	public enum solution_sourcecontrolsyncstatus
+	{
+		
+		[System.Runtime.Serialization.EnumMemberAttribute()]
+		Notstarted = 0,
+		
+		[System.Runtime.Serialization.EnumMemberAttribute()]
+		Initialsyncinprogress = 1,
+		
+		[System.Runtime.Serialization.EnumMemberAttribute()]
+		Errorsininitialsync = 2,
+		
+		[System.Runtime.Serialization.EnumMemberAttribute()]
+		Pendingchangestobecommitted = 3,
+		
+		[System.Runtime.Serialization.EnumMemberAttribute()]
+		Committed = 4,
+	}
+	
 	/// <summary>
 	/// A solution which contains CRM customizations.
 	/// </summary>
@@ -50,6 +71,7 @@ namespace Empowered.Dataverse.Webresources.Model
 			public const string CreatedOn = "createdon";
 			public const string CreatedOnBehalfBy = "createdonbehalfby";
 			public const string Description = "description";
+			public const string EnabledForSourceControlIntegration = "enabledforsourcecontrolintegration";
 			public const string FriendlyName = "friendlyname";
 			public const string InstalledOn = "installedon";
 			public const string IsApiManaged = "isapimanaged";
@@ -69,6 +91,7 @@ namespace Empowered.Dataverse.Webresources.Model
 			public const string Id = "solutionid";
 			public const string SolutionPackageVersion = "solutionpackageversion";
 			public const string SolutionType = "solutiontype";
+			public const string SourceControlSyncStatus = "sourcecontrolsyncstatus";
 			public const string TemplateSuffix = "templatesuffix";
 			public const string Thumbprint = "thumbprint";
 			public const string UniqueName = "uniquename";
@@ -84,6 +107,7 @@ namespace Empowered.Dataverse.Webresources.Model
 			public const string lk_solutionbase_modifiedonbehalfby = "lk_solutionbase_modifiedonbehalfby";
 			public const string organization_solution = "organization_solution";
 			public const string publisher_solution = "publisher_solution";
+			public const string solution_configuration_webresource = "solution_configuration_webresource";
 			public const string Referencingsolution_parent_solution = "solution_parent_solution";
 		}
 		
@@ -166,6 +190,22 @@ namespace Empowered.Dataverse.Webresources.Model
 			set
 			{
 				this.SetAttributeValue("description", value);
+			}
+		}
+		
+		/// <summary>
+		/// Indicates if solution is enabled for source control integration
+		/// </summary>
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("enabledforsourcecontrolintegration")]
+		public System.Nullable<bool> EnabledForSourceControlIntegration
+		{
+			get
+			{
+				return this.GetAttributeValue<System.Nullable<bool>>("enabledforsourcecontrolintegration");
+			}
+			set
+			{
+				this.SetAttributeValue("enabledforsourcecontrolintegration", value);
 			}
 		}
 		
@@ -424,6 +464,22 @@ namespace Empowered.Dataverse.Webresources.Model
 		}
 		
 		/// <summary>
+		/// Indicates the current status of source control integration
+		/// </summary>
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("sourcecontrolsyncstatus")]
+		public virtual solution_sourcecontrolsyncstatus? SourceControlSyncStatus
+		{
+			get
+			{
+				return ((solution_sourcecontrolsyncstatus?)(EntityOptionSetEnum.GetEnum(this, "sourcecontrolsyncstatus")));
+			}
+			set
+			{
+				this.SetAttributeValue("sourcecontrolsyncstatus", value.HasValue ? new Microsoft.Xrm.Sdk.OptionSetValue((int)value) : null);
+			}
+		}
+		
+		/// <summary>
 		/// The template suffix of this solution
 		/// </summary>
 		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("templatesuffix")]
@@ -631,6 +687,23 @@ namespace Empowered.Dataverse.Webresources.Model
 			set
 			{
 				this.SetRelatedEntity<Empowered.Dataverse.Webresources.Model.Publisher>("publisher_solution", null, value);
+			}
+		}
+		
+		/// <summary>
+		/// N:1 solution_configuration_webresource
+		/// </summary>
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("configurationpageid")]
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("solution_configuration_webresource")]
+		public Empowered.Dataverse.Webresources.Model.WebResource solution_configuration_webresource
+		{
+			get
+			{
+				return this.GetRelatedEntity<Empowered.Dataverse.Webresources.Model.WebResource>("solution_configuration_webresource", null);
+			}
+			set
+			{
+				this.SetRelatedEntity<Empowered.Dataverse.Webresources.Model.WebResource>("solution_configuration_webresource", null, value);
 			}
 		}
 		

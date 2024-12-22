@@ -557,6 +557,7 @@ namespace Empowered.Dataverse.Webresources.Model
 			public const string AllowedApplicationsForDVAccess = "allowedapplicationsfordvaccess";
 			public const string AllowedIpRangeForFirewall = "allowediprangeforfirewall";
 			public const string AllowedIpRangeForStorageAccessSignatures = "allowediprangeforstorageaccesssignatures";
+			public const string AllowedListOfIpRangesForFirewall = "allowedlistofiprangesforfirewall";
 			public const string AllowedMimeTypes = "allowedmimetypes";
 			public const string AllowedServiceTagsForFirewall = "allowedservicetagsforfirewall";
 			public const string AllowEntityOnlyAudit = "allowentityonlyaudit";
@@ -573,6 +574,7 @@ namespace Empowered.Dataverse.Webresources.Model
 			public const string AllowUserFormModePreference = "allowuserformmodepreference";
 			public const string AllowUsersHidingSystemViews = "allowusershidingsystemviews";
 			public const string AllowUsersSeeAppdownloadMessage = "allowusersseeappdownloadmessage";
+			public const string AllowVirtualEntityPluginExecutionOnNestedPipeline = "allowvirtualentitypluginexecutiononnestedpipeline";
 			public const string AllowWebExcelExport = "allowwebexcelexport";
 			public const string AMDesignator = "amdesignator";
 			public const string AppDesignerExperienceEnabled = "appdesignerexperienceenabled";
@@ -665,6 +667,7 @@ namespace Empowered.Dataverse.Webresources.Model
 			public const string EnableCalendarImportExport = "enablecalendarimportexport";
 			public const string EnableCanvasAppsInSolutionsByDefault = "enablecanvasappsinsolutionsbydefault";
 			public const string EnableEmailTemplateViews = "enableemailtemplateviews";
+			public const string EnableEnvironmentSettingsApp = "enableenvironmentsettingsapp";
 			public const string EnableFlowsInSolutionByDefault = "enableflowsinsolutionbydefault";
 			public const string EnableFlowsInSolutionByDefaultGracePeriod = "enableflowsinsolutionbydefaultgraceperiod";
 			public const string EnableImmersiveSkypeIntegration = "enableimmersiveskypeintegration";
@@ -1019,6 +1022,7 @@ namespace Empowered.Dataverse.Webresources.Model
 			public const string organization_publisher = "organization_publisher";
 			public const string organization_solution = "organization_solution";
 			public const string organization_system_users = "organization_system_users";
+			public const string webresource_organization = "webresource_organization";
 			public const string lk_organization_createdonbehalfby = "lk_organization_createdonbehalfby";
 			public const string lk_organization_modifiedonbehalfby = "lk_organization_modifiedonbehalfby";
 			public const string lk_organizationbase_createdby = "lk_organizationbase_createdby";
@@ -1360,6 +1364,22 @@ namespace Empowered.Dataverse.Webresources.Model
 		}
 		
 		/// <summary>
+		/// Specifies list of allowed IP addresses for firewall.
+		/// </summary>
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("allowedlistofiprangesforfirewall")]
+		public string AllowedListOfIpRangesForFirewall
+		{
+			get
+			{
+				return this.GetAttributeValue<string>("allowedlistofiprangesforfirewall");
+			}
+			set
+			{
+				this.SetAttributeValue("allowedlistofiprangesforfirewall", value);
+			}
+		}
+		
+		/// <summary>
 		/// Allow upload or download of certain mime types.
 		/// </summary>
 		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("allowedmimetypes")]
@@ -1612,6 +1632,22 @@ namespace Empowered.Dataverse.Webresources.Model
 			set
 			{
 				this.SetAttributeValue("allowusersseeappdownloadmessage", value);
+			}
+		}
+		
+		/// <summary>
+		/// Warning : Allowing  Virtual Entity plugin execution on nested pipeline does not offer transactional support. i.e. if call in native entity pipeline fails, then virtual entity operation will not be reverted.
+		/// </summary>
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("allowvirtualentitypluginexecutiononnestedpipeline")]
+		public System.Nullable<bool> AllowVirtualEntityPluginExecutionOnNestedPipeline
+		{
+			get
+			{
+				return this.GetAttributeValue<System.Nullable<bool>>("allowvirtualentitypluginexecutiononnestedpipeline");
+			}
+			set
+			{
+				this.SetAttributeValue("allowvirtualentitypluginexecutiononnestedpipeline", value);
 			}
 		}
 		
@@ -3058,6 +3094,22 @@ namespace Empowered.Dataverse.Webresources.Model
 			set
 			{
 				this.SetAttributeValue("enableemailtemplateviews", value);
+			}
+		}
+		
+		/// <summary>
+		/// Enables the Environment Settings App
+		/// </summary>
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("enableenvironmentsettingsapp")]
+		public System.Nullable<bool> EnableEnvironmentSettingsApp
+		{
+			get
+			{
+				return this.GetAttributeValue<System.Nullable<bool>>("enableenvironmentsettingsapp");
+			}
+			set
+			{
+				this.SetAttributeValue("enableenvironmentsettingsapp", value);
 			}
 		}
 		
@@ -8615,6 +8667,22 @@ namespace Empowered.Dataverse.Webresources.Model
 			set
 			{
 				this.SetRelatedEntities<Empowered.Dataverse.Webresources.Model.SystemUser>("organization_system_users", null, value);
+			}
+		}
+		
+		/// <summary>
+		/// 1:N webresource_organization
+		/// </summary>
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("webresource_organization")]
+		public System.Collections.Generic.IEnumerable<Empowered.Dataverse.Webresources.Model.WebResource> webresource_organization
+		{
+			get
+			{
+				return this.GetRelatedEntities<Empowered.Dataverse.Webresources.Model.WebResource>("webresource_organization", null);
+			}
+			set
+			{
+				this.SetRelatedEntities<Empowered.Dataverse.Webresources.Model.WebResource>("webresource_organization", null, value);
 			}
 		}
 		

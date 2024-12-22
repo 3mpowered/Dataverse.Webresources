@@ -1,4 +1,5 @@
 ﻿using CommandDotNet.DataAnnotations;
+using CommandDotNet.FluentValidation;
 using Empowered.CommandLine.Extensions;
 using Empowered.CommandLine.Extensions.Dataverse;
 using Empowered.Dataverse.Connection.Client.Extensions;
@@ -15,6 +16,7 @@ public static class Program
     public static void Main(string[] args) =>
         new EmpoweredAppRunner<WebresourceCommand>("3mpwrd-webresources", Configure)
             .UseDataAnnotationValidations()
+            .UseFluentValidation()
             .UseDataverseConnectionTest<IOrganizationService>()
             .Run(args);
 

@@ -84,6 +84,17 @@ namespace Empowered.Dataverse.Webresources.Model
 				return this.CreateQuery<Empowered.Dataverse.Webresources.Model.SystemUser>();
 			}
 		}
+		
+		/// <summary>
+		/// Gets a binding to the set of all <see cref="Empowered.Dataverse.Webresources.Model.WebResource"/> entities.
+		/// </summary>
+		public System.Linq.IQueryable<Empowered.Dataverse.Webresources.Model.WebResource> WebResourceSet
+		{
+			get
+			{
+				return this.CreateQuery<Empowered.Dataverse.Webresources.Model.WebResource>();
+			}
+		}
 	}
 }
 #pragma warning restore CS1591
