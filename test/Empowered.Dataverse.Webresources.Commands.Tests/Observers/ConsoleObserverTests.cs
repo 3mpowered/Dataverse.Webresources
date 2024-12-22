@@ -79,7 +79,7 @@ public class ConsoleObserverTests
     {
         var pushOptions = new PushOptions
         {
-            Directory = "C:\\",
+            Directory = Path.GetTempPath(),
             Solution = "customizations"
         };
         var @event = PushInvokedEvent.From(pushOptions);
@@ -127,7 +127,8 @@ public class ConsoleObserverTests
 
         _consoleObserver.OnNext(@event);
 
-        var expected = $"Retrieved publisher {@event.UniqueName} with friendly name {@event.FriendlyName} and customization prefix {@event.CustomizationPrefix} from {@event.Source.ToString()}";
+        var expected =
+            $"Retrieved publisher {@event.UniqueName} with friendly name {@event.FriendlyName} and customization prefix {@event.CustomizationPrefix} from {@event.Source.ToString()}";
         _console.Output.Replace("\n", string.Empty).Should().StartWith(expected);
     }
 
