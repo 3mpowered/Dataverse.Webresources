@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/3mpowered/Dataverse.Webresources/compare/v1.1.0...v1.2.0) (2024-12-23)
+
+
+### Features
+
+* **init:** show npm output and open initialized project in vs code ([#3](https://github.com/3mpowered/Dataverse.Webresources/issues/3)) ([44be2ae](https://github.com/3mpowered/Dataverse.Webresources/commit/44be2ae84ea49ca048cedaf36b8d13cd37a803a0))
+
 # [1.1.0](https://github.com/3mpowered/Dataverse.Webresources/compare/v1.0.0...v1.1.0) (2024-12-23)
 
 
