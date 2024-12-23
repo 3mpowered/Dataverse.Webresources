@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
     {
         services.TryAddScoped<IInitService, InitService>();
         services.TryAddSingleton<IFileSystem>(new FileSystem());
-        services.TryAddScoped<INpm, NpmWrapper>();
+        services.TryAddScoped<ICliWrapper, CliWrapper>();
         return services
             .AddLogging()
             .AddDataverseClient<IOrganizationService>()

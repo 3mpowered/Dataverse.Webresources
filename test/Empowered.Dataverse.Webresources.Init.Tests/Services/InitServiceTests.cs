@@ -15,12 +15,12 @@ namespace Empowered.Dataverse.Webresources.Init.Tests.Services;
 public class InitServiceTests
 {
     private readonly MockFileSystem _fileSystem = new();
-    private readonly INpm _npm = Substitute.For<INpm>();
+    private readonly ICliWrapper _cliWrapper = Substitute.For<ICliWrapper>();
     private readonly InitService _initService;
 
     public InitServiceTests()
     {
-        _initService = new InitService(NullLogger<InitService>.Instance, _fileSystem, _npm);
+        _initService = new InitService(NullLogger<InitService>.Instance, _fileSystem, _cliWrapper);
     }
 
     [Fact]
@@ -29,9 +29,11 @@ public class InitServiceTests
         var baseDir = Path.GetTempPath();
         _fileSystem.Directory.CreateDirectory(baseDir);
 
-        _npm.Install(Arg.Any<string>())
+        _cliWrapper.NpmInstall(Arg.Any<string>())
             .Returns(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1)));
-        _npm.UpgradeDependencies(Arg.Any<string>())
+        _cliWrapper.NpmUpgradeDependencies(Arg.Any<string>())
+            .Returns(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1)));
+        _cliWrapper.VsCodeOpen(Arg.Any<string>())
             .Returns(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1)));
 
         var options = new InitOptions
@@ -110,9 +112,11 @@ public class InitServiceTests
         _fileSystem.Directory.CreateDirectory(Path.Combine(baseDir, "src"));
         _fileSystem.AddEmptyFile(Path.Combine(baseDir, "package.json"));
 
-        _npm.Install(Arg.Any<string>())
+        _cliWrapper.NpmInstall(Arg.Any<string>())
             .Returns(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1)));
-        _npm.UpgradeDependencies(Arg.Any<string>())
+        _cliWrapper.NpmUpgradeDependencies(Arg.Any<string>())
+            .Returns(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1)));
+        _cliWrapper.VsCodeOpen(Arg.Any<string>())
             .Returns(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1)));
 
         var options = new InitOptions
@@ -147,9 +151,11 @@ public class InitServiceTests
         _fileSystem.Directory.CreateDirectory(Path.Combine(baseDir, "src"));
         _fileSystem.AddEmptyFile(Path.Combine(baseDir, "package.json"));
 
-        _npm.Install(Arg.Any<string>())
+        _cliWrapper.NpmInstall(Arg.Any<string>())
             .Returns(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1)));
-        _npm.UpgradeDependencies(Arg.Any<string>())
+        _cliWrapper.NpmUpgradeDependencies(Arg.Any<string>())
+            .Returns(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1)));
+        _cliWrapper.VsCodeOpen(Arg.Any<string>())
             .Returns(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1)));
 
         var options = new InitOptions
@@ -189,7 +195,7 @@ public class InitServiceTests
             UpgradeDependencies = true
         };
         var innerException = new CommandExecutionException(Cli.Wrap("npm"), 1, "error");
-        _npm.Install(Arg.Any<string>()).ThrowsForAnyArgs(innerException);
+        _cliWrapper.NpmInstall(Arg.Any<string>()).ThrowsForAnyArgs(innerException);
 
         Action actor = () => _initService.Init(options).GetAwaiter().GetResult();
 
@@ -207,7 +213,7 @@ public class InitServiceTests
     {
         var baseDir = Path.GetTempPath();
         _fileSystem.Directory.CreateDirectory(baseDir);
-        _npm.Install(Arg.Any<string>())
+        _cliWrapper.NpmInstall(Arg.Any<string>())
             .Returns(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1)));
 
         var options = new InitOptions
@@ -221,7 +227,7 @@ public class InitServiceTests
             UpgradeDependencies = true
         };
         var innerException = new CommandExecutionException(Cli.Wrap("npm"), 1, "error");
-        _npm.UpgradeDependencies(Arg.Any<string>()).ThrowsForAnyArgs(innerException);
+        _cliWrapper.NpmUpgradeDependencies(Arg.Any<string>()).ThrowsForAnyArgs(innerException);
 
         Action actor = () => _initService.Init(options).GetAwaiter().GetResult();
 
@@ -239,7 +245,7 @@ public class InitServiceTests
     {
         var baseDir = Path.GetTempPath();
         _fileSystem.Directory.CreateDirectory(baseDir);
-        _npm.Install(Arg.Any<string>())
+        _cliWrapper.NpmInstall(Arg.Any<string>())
             .Returns(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1)));
 
         var options = new InitOptions
@@ -256,6 +262,6 @@ public class InitServiceTests
         var directoryInfo = await _initService.Init(options);
 
         directoryInfo.Should().NotBeNull();
-        await _npm.DidNotReceive().UpgradeDependencies(Arg.Any<string>());
+        await _cliWrapper.DidNotReceive().NpmUpgradeDependencies(Arg.Any<string>());
     }
 }
