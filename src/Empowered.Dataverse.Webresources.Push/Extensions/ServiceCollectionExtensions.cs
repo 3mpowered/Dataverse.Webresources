@@ -11,11 +11,11 @@ namespace Empowered.Dataverse.Webresources.Push.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers the webresource services into the collection.
+    /// Registers the push webresource services into the collection.
     /// </summary>
     /// <param name="serviceCollection">The used service collection.</param>
     /// <returns>The given service collection.</returns>
-    public static IServiceCollection AddWebresources(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddPushWebresources(this IServiceCollection serviceCollection)
     {
         serviceCollection.TryAddScoped<IDataverseService, DataverseService>();
         serviceCollection.TryAddScoped<IPushService, PushService>();

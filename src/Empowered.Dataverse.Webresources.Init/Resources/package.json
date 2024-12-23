@@ -1,0 +1,84 @@
+﻿{
+    "name": "<project>",
+    "version": "1.0.0",
+    "description": "a project containing the dataverse web resources developed with typescript and build with webpack",
+    "author": "<author>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "<repository>"
+    },
+    "type": "module",
+    "targets": {
+        "default": {
+            "context": "browser",
+            "outputFormat": "global"
+        }
+    },
+    "prettier": {
+        "trailingComma": "es5",
+        "tabWidth": 4,
+        "semi": true,
+        "singleQuote": false,
+        "printWidth": 120
+    },
+    "babel": {
+        "presets": [
+            [
+                "@babel/preset-env",
+                {
+                    "useBuiltIns": "usage",
+                    "corejs": 3
+                }
+            ]
+        ],
+        "plugins": [
+            "@babel/plugin-transform-typescript"
+        ],
+        "targets": "defaults"
+    },
+    "eslintConfig": {
+        "root": true,
+        "extends": [
+            "eslint:recommended",
+            "plugin:@typescript-eslint/recommended"
+        ],
+        "parser": "@typescript-eslint/parser",
+        "plugins": [
+            "@typescript-eslint"
+        ],
+        "rules": {},
+        "ignorePatterns": [
+            "src/**/*.test.ts",
+            "rte/**/*.js",
+            "**/webpack.config.js"
+        ]
+    },
+    "scripts": {
+        "clean": "rimraf dist",
+        "build": "webpack --config webpack.config.js --mode development --devtool inline-source-map",
+        "build:prod": "npm run lint && webpack --config webpack.config.js --mode production",
+        "lint": "eslint ./src",
+        "dependencies:check": "ncu",
+        "dependencies:upgrade": "ncu --upgrade && npm install --force && npm audit fix"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.26.0",
+        "@babel/plugin-transform-typescript": "^7.26.3",
+        "@babel/preset-env": "^7.26.0",
+        "@types/xrm": "^9.0.81",
+        "@typescript-eslint/eslint-plugin": "^8.18.1",
+        "babel-loader": "^9.2.1",
+        "core-js": "^3.39.0",
+        "eslint": "^9.17.0",
+        "globby": "^14.0.2",
+        "npm-check-updates": "^17.1.12",
+        "ts-loader": "^9.5.1",
+        "tsconfig-paths-webpack-plugin": "^4.2.0",
+        "typescript": "^5.7.2",
+        "webpack": "^5.97.1",
+        "webpack-cli": "^6.0.1"
+    },
+    "dependencies": {
+    }
+}

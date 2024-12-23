@@ -61,7 +61,7 @@ public class PushArgumentsValidator : AbstractValidator<PushArguments>
         catch (Exception exception)
         {
             _logger?.LogWarning(exception,
-                "Failed to parse configuration file {FilePath} with exception: {ErrorMessage}", file.FullName,
+                "Failed to parse configuration file {FilePath} with exception: {ErrorMessage}", file?.FullName,
                 exception.Message);
             return false;
         }

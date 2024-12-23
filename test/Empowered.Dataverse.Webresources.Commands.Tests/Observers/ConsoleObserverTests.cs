@@ -1,11 +1,14 @@
-﻿using Empowered.Dataverse.Webresources.Commands.Observers;
+﻿using System.IO.Abstractions.TestingHelpers;
+using CliWrap;
+using CommandDotNet;
+using Empowered.Dataverse.Webresources.Commands.Observers;
+using Empowered.Dataverse.Webresources.Init.Events;
 using Empowered.Dataverse.Webresources.Model;
 using Empowered.Dataverse.Webresources.Push.Events;
 using Empowered.Dataverse.Webresources.Push.Model;
 using FluentAssertions;
 using Microsoft.Xrm.Sdk;
 using Spectre.Console.Testing;
-using Xunit;
 
 namespace Empowered.Dataverse.Webresources.Commands.Tests.Observers;
 
@@ -148,5 +151,83 @@ public class ConsoleObserverTests
 
         var expected = $"Retrieved solution {@event.UniqueName} with friendly name {@event.FriendlyName}";
         _console.Output.Replace(Environment.NewLine, string.Empty).Should().StartWith(expected);
+    }
+
+    [Fact]
+    public void ShouldPrintInitInvokedOnNext()
+    {
+        var @event = new InitInvokedEvent
+        {
+            Directory = new DirectoryInfo(Path.GetTempPath()),
+            Project = "webresources",
+            GlobalNamespace = "any"
+        };
+
+        _consoleObserver.OnNext(@event);
+
+        _console.Output.Replace(Environment.NewLine, string.Empty).Should()
+            .StartWith($"Initializing webresource project {@event.Project} in directory");
+    }
+
+    [Fact]
+    public void ShouldPrintDirectoryCreatedOnNext()
+    {
+        var mockFileSystem = new MockFileSystem();
+        var @event = new DirectoryCreatedEvent
+        {
+            Directory = mockFileSystem.DirectoryInfo.New(Path.GetTempPath())
+        };
+
+        _consoleObserver.OnNext(@event);
+
+        _console.Output.Replace(Environment.NewLine, string.Empty)
+            .Should()
+            .StartWith($"Created directory {@event.Directory.Name}");
+    }
+
+    [Fact]
+    public void ShouldPrintFileCreatedOnNext()
+    {
+        var mockFileSystem = new MockFileSystem();
+        var @event = new FileCreatedEvent
+        {
+            File = mockFileSystem.FileInfo.New(Path.Combine(Path.GetTempPath(), "package.json"))
+        };
+
+        _consoleObserver.OnNext(@event);
+
+        _console.Output.Replace(Environment.NewLine, string.Empty)
+            .Should()
+            .StartWith($"Created file {@event.File.Name}");
+    }
+
+    [Fact]
+    public async Task ShouldPrintNpmInstallSucceededOnNext()
+    {
+        var @event = new NpmInstallSucceededEvent
+        {
+            Result = new CommandResult(await ExitCodes.Success, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1))
+        };
+
+        _consoleObserver.OnNext(@event);
+
+        _console.Output.Replace(Environment.NewLine, string.Empty)
+            .Should()
+            .StartWith($"npm install succeeded in {@event.Result.RunTime.Milliseconds} milliseconds");
+    }
+
+    [Fact]
+    public async Task ShouldPrintNpmUpgradeSucceededOnNext()
+    {
+        var @event = new NpmUpgradeSucceededEvent
+        {
+            Result = new CommandResult(await ExitCodes.Success, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1))
+        };
+
+        _consoleObserver.OnNext(@event);
+
+        _console.Output.Replace(Environment.NewLine, string.Empty)
+            .Should()
+            .StartWith($"npm run dependencies:upgrade succeeded in {@event.Result.RunTime.Milliseconds} milliseconds");
     }
 }
