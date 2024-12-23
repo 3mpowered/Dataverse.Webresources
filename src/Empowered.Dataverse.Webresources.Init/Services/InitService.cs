@@ -12,7 +12,7 @@ namespace Empowered.Dataverse.Webresources.Init.Services;
 internal class InitService(
     ILogger<InitService> logger,
     IFileSystem fileSystem,
-    INpm npm,
+    ICliWrapper cliWrapper,
     IEventObservable? observable = null
 ) : IInitService
 {
@@ -28,6 +28,7 @@ internal class InitService(
 
         await NpmInstallProject(projectDirectory);
         await UpgradeDependencies(options, projectDirectory);
+        await OpenProjectInVsCode(projectDirectory);
 
         return projectDirectory;
     }
@@ -112,6 +113,25 @@ internal class InitService(
         GetOrCreateFile(settingsPath, options, settingsJsonFile);
     }
 
+    private async Task OpenProjectInVsCode(IDirectoryInfo projectDirectory)
+    {
+        try
+        {
+            var result = await cliWrapper.VsCodeOpen(projectDirectory.FullName);
+            logger.LogTrace("Opened project {Directory} in visual studio code with result {Result}",
+                projectDirectory.FullName, result);
+        }
+        catch (CommandExecutionException exception)
+        {
+            logger.LogError(exception,
+                "Opening project directory {Directory} in visual studio code failed with error: {Error}",
+                projectDirectory.FullName, exception.Message);
+            throw new InvalidOperationException(
+                $"Opening project directory {projectDirectory.FullName} in visual studio code failed with error: {exception.Message}",
+                exception);
+        }
+    }
+
     private async Task UpgradeDependencies(InitOptions options, IDirectoryInfo projectDirectory)
     {
         if (!options.UpgradeDependencies)
@@ -122,7 +142,7 @@ internal class InitService(
 
         try
         {
-            var result = await npm.UpgradeDependencies(projectDirectory.FullName);
+            var result = await cliWrapper.NpmUpgradeDependencies(projectDirectory.FullName);
             observable?.Publish(NpmUpgradeSucceededEvent.From(result));
             logger.LogTrace("Upgraded project {Project} with result {result}", projectDirectory.FullName, result);
         }
@@ -139,7 +159,7 @@ internal class InitService(
     {
         try
         {
-            var result = await npm.Install(projectDirectory.FullName);
+            var result = await cliWrapper.NpmInstall(projectDirectory.FullName);
             observable?.Publish(NpmInstallSucceededEvent.From(result));
             logger.LogTrace("Executed npm install with result {Result}", result);
         }
