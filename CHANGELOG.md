@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/3mpowered/Dataverse.Webresources/compare/v1.0.0...v1.1.0) (2024-12-23)
+
+
+### Features
+
+* **init:** add init command to initialize webresource projects ([#2](https://github.com/3mpowered/Dataverse.Webresources/issues/2)) ([7e083b3](https://github.com/3mpowered/Dataverse.Webresources/commit/7e083b3a72d2bf057b2454ccd8b4c5e7bf7fb7ea))
+
 # 1.0.0 (2024-12-23)
 
 
