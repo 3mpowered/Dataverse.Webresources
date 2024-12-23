@@ -1,0 +1,25 @@
+﻿{
+    "compilerOptions": {
+        "outDir": "./dist",
+        "module": "ESNext",
+        "target": "ES6",
+        "listEmittedFiles": true,
+        "sourceMap": true,
+        "removeComments": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "moduleResolution": "node",
+        "rootDir": "./src",
+        "esModuleInterop": true,
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "lib": ["DOM", "ESNext"],
+        "baseUrl": "./",
+        "paths": {
+            "@/*": ["./src/*"]
+        }
+    },
+    "typeRoots": ["node_modules/@types"],
+    "exclude": ["node_modules"],
+    "include": ["./src/**/*.ts"]
+}

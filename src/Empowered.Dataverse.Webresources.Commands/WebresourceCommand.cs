@@ -2,6 +2,8 @@
 using Empowered.CommandLine.Extensions.Extensions;
 using Empowered.Dataverse.Webresources.Commands.Arguments;
 using Empowered.Dataverse.Webresources.Commands.Services;
+using Empowered.Dataverse.Webresources.Init.Model;
+using Empowered.Dataverse.Webresources.Init.Services;
 using Empowered.Dataverse.Webresources.Push.Model;
 using Empowered.Dataverse.Webresources.Push.Services;
 using Spectre.Console;
@@ -11,12 +13,13 @@ namespace Empowered.Dataverse.Webresources.Commands;
 public class WebresourceCommand(
     IAnsiConsole console,
     IPushService pushService,
-    IPushOptionResolver optionResolver,
+    IInitService initService,
+    IOptionResolver optionResolver,
     IPushOptionWriter optionWriter)
 {
     public async Task<int> Push(PushArguments arguments)
     {
-        var options = optionResolver.Resolve(arguments);
+        var options = optionResolver.Resolve<PushOptions, PushArguments>(arguments);
         var results = pushService.PushWebresources(options);
         console.Success(
             $"Pushed {results.Count.ToString().Italic()} webresources to solution {options.Solution.Italic()}");
@@ -27,6 +30,15 @@ public class WebresourceCommand(
             console.Info($"Wrote invoked arguments to the json configuration file {targetPath.FullName.Italic()}");
         }
 
+        return await ExitCodes.Success;
+    }
+
+    public async Task<int> Init(InitArguments arguments)
+    {
+        var options = optionResolver.Resolve<InitOptions, InitArguments>(arguments);
+        var projectDirectory = await initService.Init(options);
+        console.Success(
+            $"Initialized project {arguments.Project.Italic()} in directory {projectDirectory.FullName.Italic()}");
         return await ExitCodes.Success;
     }
 }

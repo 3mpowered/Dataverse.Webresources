@@ -3,29 +3,32 @@ using System.IO.Abstractions.TestingHelpers;
 using CommandDotNet;
 using Empowered.Dataverse.Webresources.Commands.Arguments;
 using Empowered.Dataverse.Webresources.Commands.Services;
+using Empowered.Dataverse.Webresources.Init.Model;
+using Empowered.Dataverse.Webresources.Init.Services;
 using Empowered.Dataverse.Webresources.Push.Model;
 using Empowered.Dataverse.Webresources.Push.Services;
 using FluentAssertions;
 using NSubstitute;
 using Spectre.Console;
-using Xunit;
 
 namespace Empowered.Dataverse.Webresources.Commands.Tests;
 
 public class WebresourceCommandTests
 {
-    private WebresourceCommand _webresourceCommand;
+    private readonly WebresourceCommand _webresourceCommand;
     private readonly IPushService _pushService;
     private readonly IPushOptionWriter _optionWriter;
-    private readonly IPushOptionResolver _optionResolver;
+    private readonly IOptionResolver _optionResolver;
+    private readonly IInitService _initService;
 
     public WebresourceCommandTests()
     {
-        _optionResolver = Substitute.For<IPushOptionResolver>();
+        _optionResolver = Substitute.For<IOptionResolver>();
         _optionWriter = Substitute.For<IPushOptionWriter>();
         _pushService = Substitute.For<IPushService>();
+        _initService = Substitute.For<IInitService>();
         _webresourceCommand =
-            new WebresourceCommand(AnsiConsole.Console, _pushService, _optionResolver, _optionWriter);
+            new WebresourceCommand(AnsiConsole.Console, _pushService, _initService, _optionResolver, _optionWriter);
     }
 
     [Fact]
@@ -35,7 +38,7 @@ public class WebresourceCommandTests
         {
             PersistConfiguration = new FileInfo(Path.GetTempPath())
         };
-        _optionResolver.Resolve(pushArguments).Returns(new PushOptions
+        _optionResolver.Resolve<PushOptions, PushArguments>(pushArguments).Returns(new PushOptions
         {
             Directory = Path.GetTempPath(),
             Solution = "something"
@@ -49,5 +52,28 @@ public class WebresourceCommandTests
 
         result.Should().Be(await ExitCodes.Success);
         _optionWriter.Received(1).Write(Arg.Any<PushOptions>(), pushArguments.PersistConfiguration);
+    }
+
+    [Fact]
+    public async Task ShouldSuccessfullyExecuteInitCommand()
+    {
+        var directory = new DirectoryInfo(Path.GetTempPath());
+        var projectDirectory = new DirectoryInfoWrapper(new MockFileSystem(), directory);
+        _initService.Init(Arg.Any<InitOptions>())
+            .Returns(projectDirectory);
+
+        var arguments = new InitArguments
+        {
+            Directory = directory,
+            Project = directory.Name,
+            GlobalNamespace = "Any",
+            Force = true
+        };
+        _optionResolver.Resolve<InitOptions, InitArguments>(arguments);
+
+        var result = await _webresourceCommand.Init(arguments);
+
+        result.Should().Be(await ExitCodes.Success);
+        await _initService.Received(1).Init(Arg.Any<InitOptions>());
     }
 }

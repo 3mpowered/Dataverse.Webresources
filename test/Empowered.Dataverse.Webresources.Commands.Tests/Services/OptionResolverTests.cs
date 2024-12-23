@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Empowered.Dataverse.Webresources.Commands.Arguments;
 using Empowered.Dataverse.Webresources.Commands.Services;
+using Empowered.Dataverse.Webresources.Init.Model;
 using Empowered.Dataverse.Webresources.Model;
 using Empowered.Dataverse.Webresources.Push.Model;
 using FluentAssertions;
@@ -10,15 +11,15 @@ using Xunit;
 
 namespace Empowered.Dataverse.Webresources.Commands.Tests.Services;
 
-public class PushOptionResolverTests
+public class OptionResolverTests
 {
     private static readonly string s_configPath = Path.Combine(Path.GetTempPath(), "config.json");
-    private readonly MockFileSystem _fileSystem = new MockFileSystem();
-    private readonly IPushOptionResolver _resolver;
+    private readonly MockFileSystem _fileSystem = new();
+    private readonly IOptionResolver _resolver;
 
-    public PushOptionResolverTests()
+    public OptionResolverTests()
     {
-        _resolver = new PushOptionResolver(_fileSystem, NullLogger<PushOptionResolver>.Instance);
+        _resolver = new OptionResolver(_fileSystem, NullLogger<OptionResolver>.Instance);
     }
 
     [Fact]
@@ -43,7 +44,7 @@ public class PushOptionResolverTests
             Publish = true
         };
 
-        var pushOptions = _resolver.Resolve(arguments);
+        var pushOptions = _resolver.Resolve<PushOptions, PushArguments>(arguments);
 
         pushOptions.Should().NotBeNull();
         pushOptions.DirectoryInfo.Should().NotBeNull();
@@ -87,7 +88,7 @@ public class PushOptionResolverTests
         {
             Configuration = new FileInfo(s_configPath)
         };
-        var resolvedOptions = _resolver.Resolve(pushArguments);
+        var resolvedOptions = _resolver.Resolve<PushOptions, PushArguments>(pushArguments);
 
         resolvedOptions.Should().NotBeNull();
         resolvedOptions.Directory.Should().Be(fileOptions.Directory);
@@ -103,14 +104,14 @@ public class PushOptionResolverTests
     }
 
     [Fact]
-    public void ShouldThrowOnMissingConfigurationFile()
+    public void ShouldThrowOnMissingPushOptionConfigurationFile()
     {
         var pushArguments = new PushArguments
         {
             Configuration = new FileInfo(s_configPath)
         };
 
-        Action actor = () => _resolver.Resolve(pushArguments);
+        Action actor = () => _resolver.Resolve<PushOptions, PushArguments>(pushArguments);
 
         actor.Should()
             .ThrowExactly<ArgumentException>()
@@ -121,7 +122,7 @@ public class PushOptionResolverTests
     }
 
     [Fact]
-    public void ShouldThrowOnFailingSerialization()
+    public void ShouldThrowOnFailingPushOptionSerialization()
     {
         _fileSystem.AddEmptyFile(s_configPath);
         var pushArguments = new PushArguments
@@ -129,14 +130,14 @@ public class PushOptionResolverTests
             Configuration = new FileInfo(s_configPath)
         };
 
-        Action actor = () => _resolver.Resolve(pushArguments);
+        Action actor = () => _resolver.Resolve<PushOptions, PushArguments>(pushArguments);
 
         actor.Should()
             .ThrowExactly<JsonException>();
     }
 
     [Fact]
-    public void ShouldThrowOnNullConfiguration()
+    public void ShouldThrowOnNullPushOptionConfiguration()
     {
         _fileSystem.AddFile(s_configPath, "null");
         var pushArguments = new PushArguments
@@ -144,17 +145,18 @@ public class PushOptionResolverTests
             Configuration = new FileInfo(s_configPath)
         };
 
-        Action actor = () => _resolver.Resolve(pushArguments);
+        Action actor = () => _resolver.Resolve<PushOptions, PushArguments>(pushArguments);
 
         actor.Should()
             .ThrowExactly<ArgumentException>()
             .WithParameterName("arguments")
             .And.Message
-            .Should().StartWith($"Couldn't deserialize configuration file {pushArguments.Configuration.FullName} to configuration object");
+            .Should().StartWith(
+                $"Couldn't deserialize configuration file {pushArguments.Configuration.FullName} to configuration object");
     }
 
     [Fact]
-    public void ShouldThrowOnMissingDirectory()
+    public void ShouldThrowOnMissingPushOptionDirectory()
     {
         var arguments = new PushArguments
         {
@@ -174,7 +176,7 @@ public class PushOptionResolverTests
             Publish = true
         };
 
-        Action actor =()=> _resolver.Resolve(arguments);
+        Action actor = () => _resolver.Resolve<PushOptions, PushArguments>(arguments);
 
         actor.Should()
             .ThrowExactly<ArgumentException>()
@@ -184,7 +186,7 @@ public class PushOptionResolverTests
     }
 
     [Fact]
-    public void ShouldThrowOnMissingSolution()
+    public void ShouldThrowOnMissingPushOptionSolution()
     {
         var arguments = new PushArguments
         {
@@ -204,12 +206,38 @@ public class PushOptionResolverTests
             Publish = true
         };
 
-        Action actor =()=> _resolver.Resolve(arguments);
+        Action actor = () => _resolver.Resolve<PushOptions, PushArguments>(arguments);
 
         actor.Should()
             .ThrowExactly<ArgumentException>()
             .WithParameterName("arguments")
             .And.Message
             .Should().StartWith("Solution cannot be null or empty");
+    }
+
+    [Fact]
+    public void ShouldResolveInitOptions()
+    {
+        var arguments = new InitArguments
+        {
+            Force = true,
+            GlobalNamespace = "any",
+            Directory = new DirectoryInfo(Path.GetTempPath()),
+            Project = "project",
+            Author = "author",
+            Repository = new Uri("https://github.com"),
+            UpgradeDependencies = false
+        };
+
+        var options = _resolver.Resolve<InitOptions, InitArguments>(arguments);
+
+        options.Directory.Should().Be(arguments.Directory.FullName);
+        options.DirectoryInfo.FullName.Should().BeEquivalentTo(arguments.Directory.FullName);
+        options.Force.Should().Be(arguments.Force);
+        options.Project.Should().Be(arguments.Project);
+        options.GlobalNamespace.Should().Be(arguments.GlobalNamespace);
+        options.Author.Should().Be(arguments.Author);
+        options.Repository.Should().Be(arguments.Repository.ToString());
+        options.UpgradeDependencies.Should().Be(arguments.UpgradeDependencies);
     }
 }

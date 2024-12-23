@@ -47,7 +47,9 @@ public class PushOptionWriterTests
         var persistedOptions = JsonSerializer.Deserialize<PushOptions>(fileSystemStream);
 
         persistedOptions.Should().NotBeNull();
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
         persistedOptions.Directory.Should().Be(pushOptions.Directory);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         persistedOptions.Solution.Should().Be(pushOptions.Solution);
         persistedOptions.IncludeSubDirectories.Should().Be(pushOptions.IncludeSubDirectories);
         persistedOptions.PublisherPrefix.Should().Be(pushOptions.PublisherPrefix);

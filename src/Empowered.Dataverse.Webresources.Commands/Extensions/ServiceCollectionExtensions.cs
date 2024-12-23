@@ -1,11 +1,11 @@
 ﻿using System.IO.Abstractions;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Empowered.Dataverse.Connection.Client.Extensions;
 using Empowered.Dataverse.Connection.Store.Extensions;
 using Empowered.Dataverse.Webresources.Commands.Observers;
 using Empowered.Dataverse.Webresources.Commands.Services;
 using Empowered.Dataverse.Webresources.Commands.Validation;
+using Empowered.Dataverse.Webresources.Init.Extensions;
 using Empowered.Dataverse.Webresources.Push.Extensions;
 using Empowered.Reactive.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddWebresourceCommand(this IServiceCollection serviceCollection)
     {
         serviceCollection.TryAddScoped<IEventObserver, ConsoleObserver>();
-        serviceCollection.TryAddScoped<IPushOptionResolver, PushOptionResolver>();
+        serviceCollection.TryAddScoped<IOptionResolver, OptionResolver>();
         serviceCollection.TryAddScoped<IPushOptionWriter, PushOptionWriter>();
         serviceCollection.TryAddScoped<PushArgumentsValidator>();
         serviceCollection.TryAddScoped<WebresourceCommand>();
@@ -33,7 +33,8 @@ public static class ServiceCollectionExtensions
                 AllowTrailingCommas = true
             })
             .AddDataverseClient<IOrganizationService>()
-            .AddWebresources()
+            .AddPushWebresources()
+            .AddInitWebresources()
             .AddConnectionStore();
     }
 }
