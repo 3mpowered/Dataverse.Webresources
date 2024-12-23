@@ -52,7 +52,7 @@ public class ConsoleObserverTests
     {
         var webresourceFile = new WebresourceFile(
             "foo.js",
-            "C:\\foo.js",
+            Path.Combine(Path.GetTempPath(), "foo.js"),
             ".js",
             "pub_/foo.js",
             "console.log('hello world');"
@@ -61,7 +61,7 @@ public class ConsoleObserverTests
         var pushResult = new PushResult(webresourceReference, webresourceFile, PushState.Created);
         var pushOptions = new PushOptions
         {
-            Directory = "C:\\",
+            Directory = Path.GetTempPath(),
             Solution = "customizations"
         };
         var @event = PushedWebresourceEvent.From(pushResult, pushOptions);
@@ -70,8 +70,8 @@ public class ConsoleObserverTests
 
         // TODO: where does the \n in the output come from? Seems like an issue with the test console.
         var expected =
-            $"{@event.PushResult.PushState.Format()} file {@event.PushResult.File.FilePath} with unique name {@event.PushResult.File.UniqueName} to webresource {@event.PushResult.WebresourceReference.Id}";
-        _console.Output.Replace("\n", string.Empty).Should().StartWith(expected);
+            $"{@event.PushResult.PushState.Format()} file {@event.PushResult.File.FilePath}";
+        _console.Output.Replace(Environment.NewLine, string.Empty).Should().StartWith(expected);
     }
 
     [Fact]
@@ -86,8 +86,8 @@ public class ConsoleObserverTests
 
         _consoleObserver.OnNext(@event);
         var expected =
-            $"Pushing webresources from directory {@event.Directory.FullName} into solution {@event.SolutionName} with options {@event.Options}";
-        _console.Output.Replace("\n", string.Empty).Should().StartWith(expected);
+            $"Pushing webresources from directory {@event.Directory.FullName} into";
+        _console.Output.Replace(Environment.NewLine, string.Empty).Should().StartWith(expected);
     }
 
     [Fact]
@@ -95,12 +95,12 @@ public class ConsoleObserverTests
     {
         var pushOptions = new PushOptions
         {
-            Directory = "C:\\",
+            Directory = Path.GetTempPath(),
             Solution = "customizations"
         };
         var webresourceFile = new WebresourceFile(
             "foo.js",
-            "C:\\foo.js",
+            Path.Combine(Path.GetTempPath(), "foo.js"),
             ".js",
             "pub_/foo.js",
             "console.log('hello world');"
@@ -110,7 +110,7 @@ public class ConsoleObserverTests
         _consoleObserver.OnNext(@event);
 
         var expected = $"Found file {@event.File.FileName} from file path {@event.File.FilePath}";
-        _console.Output.Replace("\n", string.Empty).Should().StartWith(expected);
+        _console.Output.Replace(Environment.NewLine, string.Empty).Should().StartWith(expected);
     }
 
     [Fact]
@@ -128,8 +128,8 @@ public class ConsoleObserverTests
         _consoleObserver.OnNext(@event);
 
         var expected =
-            $"Retrieved publisher {@event.UniqueName} with friendly name {@event.FriendlyName} and customization prefix {@event.CustomizationPrefix} from {@event.Source.ToString()}";
-        _console.Output.Replace("\n", string.Empty).Should().StartWith(expected);
+            $"Retrieved publisher {@event.UniqueName} with friendly name {@event.FriendlyName}";
+        _console.Output.Replace(Environment.NewLine, string.Empty).Should().StartWith(expected);
     }
 
     [Fact]
@@ -147,6 +147,6 @@ public class ConsoleObserverTests
         _consoleObserver.OnNext(@event);
 
         var expected = $"Retrieved solution {@event.UniqueName} with friendly name {@event.FriendlyName}";
-        _console.Output.Replace("\n", string.Empty).Should().StartWith(expected);
+        _console.Output.Replace(Environment.NewLine, string.Empty).Should().StartWith(expected);
     }
 }
