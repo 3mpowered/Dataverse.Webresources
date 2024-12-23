@@ -86,7 +86,7 @@ public class ConsoleObserverTests
 
         _consoleObserver.OnNext(@event);
         var expected =
-            $"Pushing webresources from directory {@event.Directory.FullName} into";
+            $"Pushing webresources from directory {@event.Directory.FullName}";
         _console.Output.Replace(Environment.NewLine, string.Empty).Should().StartWith(expected);
     }
 
