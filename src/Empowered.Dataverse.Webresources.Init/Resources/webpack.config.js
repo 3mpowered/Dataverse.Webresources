@@ -7,7 +7,7 @@ const OUTPUT_DIR = join(ROOT_DIR, "./dist");
 const entryPoints = globbySync(["src/form/**/*.form.ts", "src/command/**/*.command.ts", "src/view/**/*.view.ts"], {
     absolute: true,
 }).reduce((entries, file) => {
-    const entryPoint = join("Scripts", relative("src", dirname(file)), basename(file, ".ts"));
+    const entryPoint = join("scripts", relative("src", dirname(file)), basename(file, ".ts"));
     entries[entryPoint] = file;
     return entries;
 }, {});
