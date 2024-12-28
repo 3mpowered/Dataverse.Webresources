@@ -36,4 +36,23 @@ public class RegularExpressionCollectionAttributeTests
             .Should()
             .BeFalse();
     }
+
+    [Fact]
+    public void ShouldBeValidForEmptyCollections()
+    {
+        string[] collection = [];
+        new RegularExpressionCollectionAttribute(Pattern)
+            .IsValid(collection)
+            .Should()
+            .BeTrue();
+    }
+
+    [Fact]
+    public void ShouldBeValidForNullValues()
+    { ;
+        new RegularExpressionCollectionAttribute(Pattern)
+            .IsValid(null)
+            .Should()
+            .BeTrue();
+    }
 }
