@@ -23,6 +23,7 @@ public class RegularExpressionCollectionAttribute : RegularExpressionAttribute
             return false;
         }
 
-        return collection.All(val => Regex.IsMatch(val, Pattern));
+        var enumerable = collection as string[] ?? collection.ToArray();
+        return enumerable.Length == 0 || enumerable.All(val => Regex.IsMatch(val, Pattern));
     }
 }
