@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/3mpowered/Dataverse.Webresources/compare/v1.2.1...v1.2.2) (2024-12-28)
+
+
+### Bug Fixes
+
+* **push:** dont validate file-extensions on empty collection ([7f0aaf6](https://github.com/3mpowered/Dataverse.Webresources/commit/7f0aaf660a2448378b22a01a927196e959bf10c5))
+
 ## [1.2.1](https://github.com/3mpowered/Dataverse.Webresources/compare/v1.2.0...v1.2.1) (2024-12-28)
 
 
