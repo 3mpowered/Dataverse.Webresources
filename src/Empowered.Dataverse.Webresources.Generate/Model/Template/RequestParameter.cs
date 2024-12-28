@@ -1,11 +1,36 @@
-﻿namespace Empowered.Dataverse.Webresources.Generate.Model.Template;
+﻿using Empowered.Dataverse.Webresources.Generate.Extensions;
+
+namespace Empowered.Dataverse.Webresources.Generate.Model.Template;
 
 internal record RequestParameter
 {
     public required string Name { get; init; }
-    public required string Type { get; init; }
-    public required bool IsComplexType { get; init; }
+    public required ParameterDataType DataType { get; init; }
     public required bool IsOptional { get; init; }
-    public required string EdmType { get; init; }
-    public required int StructuralProperty { get; init; }
+    public string? Entity { get; init; }
+    public string? Enumeration { get; init; }
+    public ICollection<Option>? Options { get; init; }
+    public StructuralProperty StructuralProperty => DataType.ToStructuralProperty();
+
+    public string EdmType
+    {
+        get
+        {
+            // TODO: Has enumeration a default EDM type to fallback to?
+            if (DataType == ParameterDataType.Enumeration)
+            {
+                return $"Microsoft.Dynamics.CRM.{Enumeration}";
+            }
+
+            if (new[]
+                {
+                    ParameterDataType.Entity, ParameterDataType.EntityCollection, ParameterDataType.EntityReference
+                }.Contains(DataType))
+            {
+                return string.IsNullOrWhiteSpace(Entity) ? "mscrm.crmbaseentity" : $"mscrm.{Entity}";
+            }
+
+            return DataType.ToEdmTypeName();
+        }
+    }
 }

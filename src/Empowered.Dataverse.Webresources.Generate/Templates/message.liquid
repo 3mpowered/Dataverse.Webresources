@@ -1,25 +1,34 @@
-﻿export class {{ name }} implements OrganizationRequest {{ '{' }}
+﻿{% capture BoundParameter %}
+    {% case bound_parameter %}
+        {% when "Entity" %}"entity"
+        {% when "EntityCollection" %}"entityset"
+        {% when "Global" %}null
+    {% endcase %}
+{% endcapture %}
 
-    constructor({% for parameter in parameters %}
-        public {{ parameter.name }}{% if parameter.is_optional %}?{% endif %}: {{ parameter.type }} {% if parameter.is_optional %} | undefined{% endif %}{% endfor %}
-    ){ }
+{% capture OperationType %}
+    OperationType.{{ operation_type }}
+{% endcapture %}
 
-    public getMetadata(): RequestMetadata {
-        return {
-            boundParameter?: {% if is_bound %}"entity"{% else %}null{% endif %},
-            operationType: {{ operation_type }},
-            operationName: "{{ name }}",
-            parameterTypes: {{ '{' }}{% for metadata in parameter_metadata %}
-                "{{ metadata.name }}": {
-                    typeName: "{{ metadata.type }}",
-                    structuralProperty: {{ metadata.structural_property }},
-                }{% endfor %}
-            }
-        };
-    }
-}
+{% capture ParameterTypes %}
+    {% if request_parameters.size > 0 %}
+        parameterTypes: {{ "{" }}{% for parameter in request_parameters %}
+    {{ parameter.name }}: {{ "{" }}
+        structuralProperty: StructuralProperty.{{ parameter.structural_property }},
+        typeName: "{{ parameter.edm_type }}",{% if parameter.structural_property == "EnumerationType" and parameter.options.size > 0 %}
+        enumProperties: {{ "[" }}{% for option in parameter.options %}
+            {{ "{" }}
+                name: "{{ option.name }}",
+                value: {{ option.value }},
+            {{ "}" }},{% endfor %}
+        {{ "]" }}{% endif %}
+    {{ "}" }},{% endfor %}
+{{ "}" }}{% endif %}
+{% endcapture %}
 
-export interface {{ name }}Response extends OrganizationResponse {{ '{' }}
-    {% for result in results %}
-    {{ result.name }}{% if result.is_optional %}?{% endif %}: {{ result.type }}{% if result.can_be_null %} | null{% endif %};{% endfor %}
-}
+export const {{ name }}Metadata: RequestMetadata = {{ "{" }}
+    boundParameter: {{ BoundParameter | strip }},
+    operationType: {{ OperationType | strip }},
+    operationName: {{ name }},
+    {{ ParameterTypes | strip }}
+{{ "}" }}

@@ -17,7 +17,7 @@ internal class TemplateRenderer(ILogger<TemplateRenderer> logger) : ITemplateRen
 
         var template = Template.ParseLiquid(resource);
 
-        var context = new TemplateContext
+        var context = new LiquidTemplateContext
         {
             NewLine = Environment.NewLine,
             AutoIndent = true,

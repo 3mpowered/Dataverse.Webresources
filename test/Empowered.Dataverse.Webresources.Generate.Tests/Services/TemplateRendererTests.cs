@@ -166,18 +166,124 @@ public class TemplateRendererTests
     [Fact]
     public void ShouldRenderMessageTemplate()
     {
-        new Message
+        var message = new Message
         {
-            Name = "empwrd_do_something",
-            IsBound = true,
-            OperationType = 0,
-            RequestParameters = [
+            Name = "empwrd_test",
+            BoundParameter = BoundParameter.Entity,
+            OperationType = OperationType.Action,
+            RequestParameters =
+            [
                 new RequestParameter
                 {
                     Name = "entity",
-                    Type = "string"
+                    DataType = ParameterDataType.Entity,
+                    IsOptional = false,
+                    Entity = "account",
+                },
+                new RequestParameter
+                {
+                    Name = "BooleanParameter",
+                    DataType = ParameterDataType.Boolean,
+                    IsOptional = true,
+                },
+                new RequestParameter
+                {
+                    Name = "DateTimeParameter",
+                    DataType = ParameterDataType.DateTime,
+                    IsOptional = true,
+                },
+                new RequestParameter
+                {
+                    Name = "DecimalParameter",
+                    DataType = ParameterDataType.Decimal,
+                    IsOptional = true,
+                },
+                new RequestParameter
+                {
+                    Name = "BaseEntityParameter",
+                    DataType = ParameterDataType.Entity,
+                    IsOptional = true,
+                },
+                new RequestParameter
+                {
+                    Name = "EntityCollectionParameter",
+                    DataType = ParameterDataType.EntityCollection,
+                    IsOptional = true,
+                    Entity = "solution"
+                },
+                new RequestParameter
+                {
+                    Name = "EntityReferenceParameter",
+                    DataType = ParameterDataType.EntityReference,
+                    IsOptional = true
+                },
+                new RequestParameter
+                {
+                    Name = "FloatParameter",
+                    DataType = ParameterDataType.Float,
+                    IsOptional = true,
+                },
+                new RequestParameter
+                {
+                    Name = "GuidParameter",
+                    DataType = ParameterDataType.Guid,
+                    IsOptional = true
+                },
+                new RequestParameter
+                {
+                    Name = "IntegerParameter",
+                    DataType = ParameterDataType.Integer,
+                    IsOptional = true
+                },
+                new RequestParameter
+                {
+                    Name = "MoneyParameter",
+                    DataType = ParameterDataType.Money,
+                    IsOptional = true,
+                },
+                new RequestParameter
+                {
+                    Name = "PicklistParameter",
+                    DataType = ParameterDataType.Picklist,
+                    IsOptional = true
+                },
+                new RequestParameter
+                {
+                    Name = "StringArrayParameter",
+                    DataType = ParameterDataType.StringArray,
+                    IsOptional = true,
+                },
+                new RequestParameter
+                {
+                    Name = "StringParameter",
+                    DataType = ParameterDataType.String,
+                    IsOptional = true
+                },
+                new RequestParameter
+                {
+                    Name = "EnumParameter",
+                    DataType = ParameterDataType.Enumeration,
+                    IsOptional = true,
+                    Enumeration = "OptionType",
+                    Options =
+                    [
+                        new Option
+                        {
+                            Name = "Option A",
+                            Value = 1000,
+                        },
+                        new Option
+                        {
+                            Name = "Option B",
+                            Value = 1001
+                        }
+                    ]
                 }
-            ]
-        }
+            ],
+            ResponseProperties = []
+        };
+
+        var result = _templateRenderer.Render("message.liquid", message);
+        _testOutputHelper.WriteLine(result);
     }
 }
