@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/3mpowered/Dataverse.Webresources/compare/v1.2.2...v1.2.3) (2024-12-28)
+
+
+### Bug Fixes
+
+* **push:** ignore validation for file extensions, when file extensions argument is not used ([373a022](https://github.com/3mpowered/Dataverse.Webresources/commit/373a0222d543515392cf6b0a4f04240a1f83d350))
+
 ## [1.2.2](https://github.com/3mpowered/Dataverse.Webresources/compare/v1.2.1...v1.2.2) (2024-12-28)
 
 
