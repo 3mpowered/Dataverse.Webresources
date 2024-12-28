@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/3mpowered/Dataverse.Webresources/compare/v1.2.0...v1.2.1) (2024-12-28)
+
+
+### Bug Fixes
+
+* **push:** fix dependency injection for push arguments validation ([08a2ed0](https://github.com/3mpowered/Dataverse.Webresources/commit/08a2ed0e04e7b2e016e1f5c471e5b1da0fa47a55))
+
 # [1.2.0](https://github.com/3mpowered/Dataverse.Webresources/compare/v1.1.0...v1.2.0) (2024-12-23)
 
 
