@@ -2,9 +2,9 @@
 using System.Reflection;
 using CliWrap;
 using CliWrap.Exceptions;
-using Empowered.Dataverse.Webresources.Init.Extensions;
 using Empowered.Dataverse.Webresources.Init.Model;
 using Empowered.Dataverse.Webresources.Init.Services;
+using Empowered.Dataverse.Webresources.Shared.Extensions;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;

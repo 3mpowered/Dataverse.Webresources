@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
-using Empowered.Dataverse.Webresources.Init.Extensions;
 using Empowered.Dataverse.Webresources.Init.Services;
+using Empowered.Dataverse.Webresources.Shared.Extensions;
 using FluentAssertions;
 
-namespace Empowered.Dataverse.Webresources.Init.Tests.Extensions;
+namespace Empowered.Dataverse.Webresources.Shared.Tests.Extensions;
 
 public class AssemblyExtensionsTests
 {

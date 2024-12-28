@@ -1,7 +1,9 @@
-﻿using System.IO.Abstractions;
+﻿using System.Diagnostics;
+using System.IO.Abstractions;
 using System.Text.Json;
 using CommandDotNet;
 using Empowered.Dataverse.Webresources.Commands.Arguments;
+using Empowered.Dataverse.Webresources.Generate.Model;
 using Empowered.Dataverse.Webresources.Init.Model;
 using Empowered.Dataverse.Webresources.Model;
 using Empowered.Dataverse.Webresources.Push.Model;
@@ -19,6 +21,7 @@ internal class OptionResolver(IFileSystem fileSystem, ILogger<OptionResolver> lo
         {
             PushArguments pushArguments => Resolve(pushArguments),
             InitArguments initArguments => Resolve(initArguments),
+            GenerateArguments generateArguments => Resolve(generateArguments),
             _ => throw new ArgumentException(
                 $"Arguments of type {arguments.GetType().Name} are not handled by option resolver",
                 nameof(arguments))
@@ -39,31 +42,45 @@ internal class OptionResolver(IFileSystem fileSystem, ILogger<OptionResolver> lo
         Repository = arguments.Repository?.ToString(),
     };
 
+    private GenerateOptions Resolve(GenerateArguments arguments)
+    {
+        if (arguments.Configuration != null)
+        {
+            var configOptions = ReadOptionsFromConfiguration<GenerateOptions>(arguments);
+
+            var mergedOptions = new GenerateOptions
+            {
+                Directory = arguments.Directory?.FullName ?? configOptions.Directory,
+                Entities = arguments.Entities.Length > 0 ? arguments.Entities : configOptions.Entities,
+                Actions = arguments.Actions.Length > 0 ? arguments.Actions : configOptions.Actions,
+                Forms = arguments.Forms.Length > 0 ? arguments.Forms : configOptions.Forms,
+            };
+
+            return mergedOptions;
+        }
+
+        logger.LogDebug("Resolving push options via inline arguments {InlineArguments}", arguments);
+        if (arguments.Directory == null)
+        {
+            throw new ArgumentException("Directory cannot be null", nameof(arguments));
+        }
+
+        var inlineOptions = new GenerateOptions
+        {
+            Directory = arguments.Directory.FullName,
+            Entities = arguments.Entities,
+            Actions = arguments.Actions,
+            Forms = arguments.Forms
+        };
+
+        return inlineOptions;
+    }
+
     private PushOptions Resolve(PushArguments arguments)
     {
         if (arguments.Configuration != null)
         {
-            logger.LogDebug(
-                "Resolving push options using configuration file {ConfigurationFile} and overwriting with inline arguments {InlineArguments}",
-                arguments.Configuration.FullName, arguments);
-            var configurationFile = fileSystem.FileInfo.Wrap(arguments.Configuration);
-
-            if (configurationFile is not { Exists: true })
-            {
-                logger.LogWarning("Configuration file {ConfigurationFile} doesn't exist", configurationFile?.FullName);
-                throw new ArgumentException($"Configuration file {configurationFile?.FullName} doesn't exist!",
-                    nameof(arguments));
-            }
-
-            using var fileSystemStream = configurationFile.OpenRead();
-            var configOptions = JsonSerializer.Deserialize<PushOptions>(fileSystemStream);
-
-            if (configOptions == null)
-            {
-                throw new ArgumentException(
-                    $"Couldn't deserialize configuration file {configurationFile.FullName} to configuration object",
-                    nameof(arguments));
-            }
+            var configOptions = ReadOptionsFromConfiguration<PushOptions>(arguments);
 
             var mergedOptions = new PushOptions
             {
@@ -108,5 +125,33 @@ internal class OptionResolver(IFileSystem fileSystem, ILogger<OptionResolver> lo
         };
 
         return inlineOptions;
+    }
+
+    private TOptions ReadOptionsFromConfiguration<TOptions>(ConfigurationAwareArguments arguments)
+        where TOptions : class
+    {
+        logger.LogDebug(
+            "Resolving generate options using configuration file {ConfigurationFile} and overwriting with inline arguments {InlineArguments}",
+            arguments.Configuration?.FullName, arguments);
+        var configurationFile = fileSystem.FileInfo.Wrap(arguments.Configuration);
+
+        if (configurationFile is not { Exists: true })
+        {
+            logger.LogWarning("Configuration file {ConfigurationFile} doesn't exist", configurationFile?.FullName);
+            throw new ArgumentException($"Configuration file {configurationFile?.FullName} doesn't exist!",
+                nameof(arguments));
+        }
+
+        using var fileSystemStream = configurationFile.OpenRead();
+        var configOptions = JsonSerializer.Deserialize<TOptions>(fileSystemStream);
+
+        if (configOptions == null)
+        {
+            throw new ArgumentException(
+                $"Couldn't deserialize configuration file {configurationFile.FullName} to configuration object",
+                nameof(arguments));
+        }
+
+        return configOptions;
     }
 }

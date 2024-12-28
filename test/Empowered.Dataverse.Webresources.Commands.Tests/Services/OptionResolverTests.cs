@@ -2,12 +2,12 @@
 using System.Text.Json;
 using Empowered.Dataverse.Webresources.Commands.Arguments;
 using Empowered.Dataverse.Webresources.Commands.Services;
+using Empowered.Dataverse.Webresources.Generate.Model;
 using Empowered.Dataverse.Webresources.Init.Model;
 using Empowered.Dataverse.Webresources.Model;
 using Empowered.Dataverse.Webresources.Push.Model;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
-using Xunit;
 
 namespace Empowered.Dataverse.Webresources.Commands.Tests.Services;
 
@@ -27,11 +27,11 @@ public class OptionResolverTests
     {
         var arguments = new PushArguments
         {
-            PersistConfiguration = new FileInfo("C:\\temp"),
+            PersistConfiguration = new FileInfo(Path.GetTempPath()),
             Configuration = null,
             Solution = "customizations",
             Publisher = "pub",
-            Directory = new DirectoryInfo("C:\\temp"),
+            Directory = new DirectoryInfo(Path.GetTempPath()),
             Recursive = true,
             FileExtensions =
             [
@@ -160,7 +160,7 @@ public class OptionResolverTests
     {
         var arguments = new PushArguments
         {
-            PersistConfiguration = new FileInfo("C:\\temp"),
+            PersistConfiguration = new FileInfo(Path.GetTempPath()),
             Configuration = null,
             Solution = "customizations",
             Publisher = "pub",
@@ -190,7 +190,7 @@ public class OptionResolverTests
     {
         var arguments = new PushArguments
         {
-            PersistConfiguration = new FileInfo("C:\\temp"),
+            PersistConfiguration = new FileInfo(Path.GetTempPath()),
             Configuration = null,
             Directory = new DirectoryInfo(Path.GetTempPath()),
             Publisher = "pub",
@@ -239,5 +239,93 @@ public class OptionResolverTests
         options.Author.Should().Be(arguments.Author);
         options.Repository.Should().Be(arguments.Repository.ToString());
         options.UpgradeDependencies.Should().Be(arguments.UpgradeDependencies);
+    }
+
+    [Fact]
+    public void ShouldResolveGenerateOptionsFromConfiguration()
+    {
+        var fileOptions = new GenerateOptions
+        {
+            Directory = Path.GetTempPath(),
+            Entities =
+            [
+                "account"
+            ],
+            Actions =
+            [
+                "WhoAmI"
+            ],
+            Forms =
+            [
+                Guid.NewGuid()
+            ]
+        };
+
+        var optionsString = JsonSerializer.Serialize(fileOptions);
+        _fileSystem.AddFile(s_configPath, optionsString);
+
+        var pushArguments = new GenerateArguments
+        {
+            Configuration = new FileInfo(s_configPath)
+        };
+        var resolvedOptions = _resolver.Resolve<GenerateOptions, GenerateArguments>(pushArguments);
+
+        resolvedOptions.Should().NotBeNull();
+        resolvedOptions.Directory.Should().Be(fileOptions.Directory);
+        resolvedOptions.DirectoryInfo.FullName.Should().Be(fileOptions.DirectoryInfo.FullName);
+        resolvedOptions.Forms.Should().BeEquivalentTo(fileOptions.Forms);
+        resolvedOptions.Entities.Should().BeEquivalentTo(fileOptions.Entities);
+        resolvedOptions.Actions.Should().BeEquivalentTo(fileOptions.Actions);
+    }
+
+    [Fact]
+    public void ShouldResolveGenerateOptionsFromInlineArguments()
+    {
+        var arguments = new GenerateArguments
+        {
+            PersistConfiguration = new FileInfo(Path.GetTempPath()),
+            Configuration = null,
+            Directory = new DirectoryInfo(Path.GetTempPath()),
+            Entities =
+            [
+                "account"
+            ],
+            Actions =
+            [
+                "WhoAmI"
+            ],
+            Forms =
+            [
+                Guid.NewGuid()
+            ]
+        };
+
+        var inlineOptions = _resolver.Resolve<GenerateOptions, GenerateArguments>(arguments);
+
+        inlineOptions.Should().NotBeNull();
+        inlineOptions.DirectoryInfo.Should().NotBeNull();
+        inlineOptions.DirectoryInfo.FullName.Should().BeEquivalentTo(arguments.Directory.FullName);
+        inlineOptions.Directory.Should().Be(arguments.Directory.FullName);
+        inlineOptions.Forms.Should().BeEquivalentTo(arguments.Forms);
+        inlineOptions.Entities.Should().BeEquivalentTo(arguments.Entities);
+        inlineOptions.Actions.Should().BeEquivalentTo(arguments.Actions);
+    }
+
+    [Fact]
+    public void ShouldThrowOnMissingGenerateOptionDirectory()
+    {
+        var arguments = new GenerateArguments
+        {
+            PersistConfiguration = new FileInfo(Path.GetTempPath()),
+            Configuration = null,
+        };
+
+        Action actor = () => _resolver.Resolve<GenerateOptions, GenerateArguments>(arguments);
+
+        actor.Should()
+            .ThrowExactly<ArgumentException>()
+            .WithParameterName("arguments")
+            .And.Message
+            .Should().StartWith("Directory cannot be null");
     }
 }

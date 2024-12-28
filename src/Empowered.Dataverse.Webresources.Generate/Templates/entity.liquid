@@ -1,0 +1,3 @@
+﻿export interface {{ name }} {{ '{' }}{% for property in properties %}
+    {{ property.name }}{% if property.is_optional %}?{% endif %}: {{ property.type }}{% if property.can_be_nullable %} | null{% endif %};{% endfor %}
+}

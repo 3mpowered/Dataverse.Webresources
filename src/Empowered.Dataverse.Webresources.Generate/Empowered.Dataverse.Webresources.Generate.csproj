@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Empowered.Dataverse.Connection.Client" Version="1.0.1"/>
+    <PackageReference Include="Empowered.Reactive.Extensions" Version="1.0.0"/>
+    <PackageReference Include="Humanizer" Version="2.14.1"/>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1"/>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1"/>
+    <PackageReference Include="Scriban" Version="5.12.1"/>
+    <PackageReference Include="TestableIO.System.IO.Abstractions" Version="21.1.7"/>
+    <PackageReference Include="TestableIO.System.IO.Abstractions.Extensions" Version="2.2.5"/>
+    <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="21.1.7"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Events\"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Templates\*"/>
+    <EmbeddedResource Include="Templates\*"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Empowered.Dataverse.Webresources.Shared\Empowered.Dataverse.Webresources.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

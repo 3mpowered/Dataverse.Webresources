@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Empowered.Dataverse.Webresources.Common\Empowered.Dataverse.Webresources.Common.csproj" />
     <ProjectReference Include="..\Empowered.Dataverse.Webresources.Model\Empowered.Dataverse.Webresources.Model.csproj"/>
   </ItemGroup>
 

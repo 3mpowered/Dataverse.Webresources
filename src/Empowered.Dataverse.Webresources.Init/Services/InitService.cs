@@ -2,8 +2,8 @@
 using System.Reflection;
 using CliWrap.Exceptions;
 using Empowered.Dataverse.Webresources.Init.Events;
-using Empowered.Dataverse.Webresources.Init.Extensions;
 using Empowered.Dataverse.Webresources.Init.Model;
+using Empowered.Dataverse.Webresources.Shared.Extensions;
 using Empowered.Reactive.Extensions;
 using Microsoft.Extensions.Logging;
 

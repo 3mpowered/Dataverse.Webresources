@@ -3,6 +3,8 @@ using System.IO.Abstractions.TestingHelpers;
 using CommandDotNet;
 using Empowered.Dataverse.Webresources.Commands.Arguments;
 using Empowered.Dataverse.Webresources.Commands.Services;
+using Empowered.Dataverse.Webresources.Generate.Model;
+using Empowered.Dataverse.Webresources.Generate.Services;
 using Empowered.Dataverse.Webresources.Init.Model;
 using Empowered.Dataverse.Webresources.Init.Services;
 using Empowered.Dataverse.Webresources.Push.Model;
@@ -17,22 +19,25 @@ public class WebresourceCommandTests
 {
     private readonly WebresourceCommand _webresourceCommand;
     private readonly IPushService _pushService;
-    private readonly IPushOptionWriter _optionWriter;
+    private readonly IOptionWriter _optionWriter;
     private readonly IOptionResolver _optionResolver;
     private readonly IInitService _initService;
+    private readonly IGenerateService _generateService;
 
     public WebresourceCommandTests()
     {
         _optionResolver = Substitute.For<IOptionResolver>();
-        _optionWriter = Substitute.For<IPushOptionWriter>();
+        _optionWriter = Substitute.For<IOptionWriter>();
         _pushService = Substitute.For<IPushService>();
         _initService = Substitute.For<IInitService>();
+        _generateService = Substitute.For<IGenerateService>();
         _webresourceCommand =
-            new WebresourceCommand(AnsiConsole.Console, _pushService, _initService, _optionResolver, _optionWriter);
+            new WebresourceCommand(AnsiConsole.Console, _pushService, _initService, _generateService, _optionResolver,
+                _optionWriter);
     }
 
     [Fact]
-    public async Task ShouldWriteOptionFileIfPersistConfigurationIsSet()
+    public async Task ShouldWritePushOptionFileIfPersistConfigurationIsSet()
     {
         var pushArguments = new PushArguments
         {
@@ -52,6 +57,30 @@ public class WebresourceCommandTests
 
         result.Should().Be(await ExitCodes.Success);
         _optionWriter.Received(1).Write(Arg.Any<PushOptions>(), pushArguments.PersistConfiguration);
+    }
+
+    [Fact]
+    public async Task ShouldWriteGenerateOptionFileIfPersistConfigurationIsSet()
+    {
+        var arguments = new GenerateArguments
+        {
+            PersistConfiguration = new FileInfo(Path.GetTempPath())
+        };
+        var options = new GenerateOptions
+        {
+            Directory = Path.GetTempPath(),
+        };
+
+        _optionResolver.Resolve<GenerateOptions, GenerateArguments>(arguments).Returns(options);
+        _generateService.Generate(Arg.Any<GenerateOptions>())
+            .Returns(new DirectoryInfoWrapper(new MockFileSystem(), options.DirectoryInfo));
+        _optionWriter.Write(Arg.Any<GenerateOptions>(), arguments.PersistConfiguration)
+            .Returns(new FileInfoWrapper(new MockFileSystem(), arguments.PersistConfiguration));
+
+        var result = await _webresourceCommand.Generate(arguments);
+
+        result.Should().Be(await ExitCodes.Success);
+        _optionWriter.Received(1).Write(Arg.Any<GenerateOptions>(), arguments.PersistConfiguration);
     }
 
     [Fact]

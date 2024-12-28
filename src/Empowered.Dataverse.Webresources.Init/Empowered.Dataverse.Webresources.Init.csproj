@@ -5,6 +5,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Empowered.Dataverse.Webresources.Model\Empowered.Dataverse.Webresources.Model.csproj"/>
+    <ProjectReference Include="..\Empowered.Dataverse.Webresources.Shared\Empowered.Dataverse.Webresources.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

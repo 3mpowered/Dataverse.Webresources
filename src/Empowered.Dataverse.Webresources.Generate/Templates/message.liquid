@@ -1,0 +1,25 @@
+﻿export class {{ name }} implements OrganizationRequest {{ '{' }}
+
+    constructor({% for parameter in parameters %}
+        public {{ parameter.name }}{% if parameter.is_optional %}?{% endif %}: {{ parameter.type }} {% if parameter.is_optional %} | undefined{% endif %}{% endfor %}
+    ){ }
+
+    public getMetadata(): RequestMetadata {
+        return {
+            boundParameter?: {% if is_bound %}"entity"{% else %}null{% endif %},
+            operationType: {{ operation_type }},
+            operationName: "{{ name }}",
+            parameterTypes: {{ '{' }}{% for metadata in parameter_metadata %}
+                "{{ metadata.name }}": {
+                    typeName: "{{ metadata.type }}",
+                    structuralProperty: {{ metadata.structural_property }},
+                }{% endfor %}
+            }
+        };
+    }
+}
+
+export interface {{ name }}Response extends OrganizationResponse {{ '{' }}
+    {% for result in results %}
+    {{ result.name }}{% if result.is_optional %}?{% endif %}: {{ result.type }}{% if result.can_be_null %} | null{% endif %};{% endfor %}
+}

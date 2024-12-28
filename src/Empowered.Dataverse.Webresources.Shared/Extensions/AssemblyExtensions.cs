@@ -1,8 +1,9 @@
 ﻿using System.Reflection;
 
-namespace Empowered.Dataverse.Webresources.Init.Extensions;
+namespace Empowered.Dataverse.Webresources.Shared.Extensions;
 
-public static class AssemblyExtensions
+public static class
+    AssemblyExtensions
 {
     public static string GetEmbeddedResource(this Assembly assembly, string resourceName)
     {

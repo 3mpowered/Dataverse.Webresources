@@ -9,17 +9,17 @@ using Xunit;
 
 namespace Empowered.Dataverse.Webresources.Commands.Tests.Services;
 
-public class PushOptionWriterTests
+public class OptionWriterTests
 {
     private static readonly string s_configPath = Path.Combine(Path.GetTempPath(), "config.json");
     private readonly MockFileSystem _fileSystem = new();
-    private readonly IPushOptionWriter _pushOptionWriter;
+    private readonly IOptionWriter _optionWriter;
 
-    public PushOptionWriterTests()
+    public OptionWriterTests()
     {
-        _pushOptionWriter = new PushOptionWriter(
+        _optionWriter = new OptionWriter(
             _fileSystem,
-            NullLogger<PushOptionWriter>.Instance,
+            NullLogger<OptionWriter>.Instance,
             new JsonSerializerOptions(JsonSerializerOptions.Default)
         );
     }
@@ -41,7 +41,7 @@ public class PushOptionWriterTests
             DefaultWebresourceType = webresource_webresourcetype.Data_XML,
             AllowManagedUpdates = false
         };
-        var configFile = _pushOptionWriter.Write(pushOptions, new FileInfo(s_configPath));
+        var configFile = _optionWriter.Write(pushOptions, new FileInfo(s_configPath));
 
         using var fileSystemStream = configFile.OpenRead();
         var persistedOptions = JsonSerializer.Deserialize<PushOptions>(fileSystemStream);

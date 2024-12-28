@@ -2,6 +2,8 @@
 using Empowered.CommandLine.Extensions.Extensions;
 using Empowered.Dataverse.Webresources.Commands.Arguments;
 using Empowered.Dataverse.Webresources.Commands.Services;
+using Empowered.Dataverse.Webresources.Generate.Model;
+using Empowered.Dataverse.Webresources.Generate.Services;
 using Empowered.Dataverse.Webresources.Init.Model;
 using Empowered.Dataverse.Webresources.Init.Services;
 using Empowered.Dataverse.Webresources.Push.Model;
@@ -14,8 +16,9 @@ public class WebresourceCommand(
     IAnsiConsole console,
     IPushService pushService,
     IInitService initService,
+    IGenerateService generateService,
     IOptionResolver optionResolver,
-    IPushOptionWriter optionWriter)
+    IOptionWriter optionWriter)
 {
     public async Task<int> Push(PushArguments arguments)
     {
@@ -39,6 +42,20 @@ public class WebresourceCommand(
         var projectDirectory = await initService.Init(options);
         console.Success(
             $"Initialized project {arguments.Project.Italic()} in directory {projectDirectory.FullName.Italic()}");
+        return await ExitCodes.Success;
+    }
+
+    public async Task<int> Generate(GenerateArguments arguments)
+    {
+        var options = optionResolver.Resolve<GenerateOptions, GenerateArguments>(arguments);
+        var directoryInfo = generateService.Generate(options);
+
+        if (arguments.PersistConfiguration != null)
+        {
+            var targetPath = optionWriter.Write(options, arguments.PersistConfiguration);
+            console.Info($"Wrote invoked arguments to the json configuration file {targetPath.FullName.Italic()}");
+        }
+
         return await ExitCodes.Success;
     }
 }
