@@ -1,3 +1,45 @@
-﻿export interface {{ name }} {{ '{' }}{% for property in properties %}
-    {{ property.name }}{% if property.is_optional %}?{% endif %}: {{ property.type }}{% if property.can_be_nullable %} | null{% endif %};{% endfor %}
+﻿{% capture AttributeProperties %}
+    {%- for property in attribute_properties -%}
+        {% capture DataType %}
+            {% case property.data_type %}
+                {% when "Boolean" %}boolean
+                {% when "DateTime" %}string
+                {% when "Decimal" %}number
+                {% when "EntityCollection" %}{% if property.entity %}{{ property.entity }}[]{% else %}Entity[]{% endif %}
+                {% when "Entity" %}{% if property.entity %}{{ property.entity }}{% else %}Entity{% endif %}
+                {% when "EntityReference" %}{{ "{" }} "odata.type": {% if property.entity %}"Microsoft.Dynamics.CRM.{{ property.entity }}"{% else %}string{% endif %}, {% if property.primary_id_name %}{{ property.primary_id_name }}: string{% else %}[key: string]: string{% endif %} {{ "}" }}
+                {% when "Enumeration" %}EnumerationOption
+                {% when "Float" %}number
+                {% when "Guid" %}string
+                {% when "Integer" %}number
+                {% when "Money" %}number
+                {% when "Picklist" %}number
+                {% when "StringArray" %}string[]
+                {% when "String" %}string
+            {% endcase %}
+        {% endcapture %}
+        {%- capture FormattedProperty %}
+            {% if property.is_formattable %}"{{ property.name }}@OData.Community.Display.V1.FormattedValue"{% if property.is_optional %}?{% endif %}: string{% if property.is_nullable %}{{ " | null" }}{% endif %};{% endif %}
+        {% endcapture %}
+        {%- capture TypeProperty %}
+            {% if property.is_entity_type %}"{{ property.name }}@Microsoft.Dynamics.CRM.lookuplogicalname"{% if property.is_optional %}?{% endif %}: {% if property.entity %}"{{ property.entity }}"{% else %}string{% endif %}{% if property.is_nullable %} {{ " | null" }}{% endif %};{% endif %}
+        {% endcapture %}
+        {%- capture BaseProperty %}
+            {{ property.name }}{% if property.is_optional %}?{% endif %}: {{ DataType | strip_newlines | strip }}{% if property.is_nullable %}{{ " | null" }}{% endif %};
+        {% endcapture %}
+{{ BaseProperty | strip_newlines | strip }}
+{{ FormattedProperty | strip_newlines | strip }}
+{{ TypeProperty | strip_newlines | strip }}
+    {% endfor -%}
+{% endcapture %}
+
+{% capture NavigationProperties %}
+    {%- for property in navigation_properties -%}
+        {{ property.name }}{% if property.is_optional %}?{% endif %}: {% if property.entity %}{{ property.entity }}{% else %}Entity{% endif %}{% if property.is_nullable %}{{ " | null" }}{% endif %};
+    {% endfor -%}
+{% endcapture %}
+export interface {{ name }} {
+    {{ AttributeProperties | strip }}
+
+    {{ NavigationProperties | strip }}
 }

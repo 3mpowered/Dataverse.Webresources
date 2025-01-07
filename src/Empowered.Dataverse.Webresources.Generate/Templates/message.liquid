@@ -6,29 +6,96 @@
     {% endcase %}
 {% endcapture %}
 
+{% capture MetadataName %}
+    {{ name }}Metadata
+{% endcapture %}
+
+{% capture RequestName %}
+    {{ name }}Request
+{% endcapture %}
+
+{% capture ResponseName %}
+    {{ name }}Response
+{%endcapture%}
+
 {% capture OperationType %}
     OperationType.{{ operation_type }}
 {% endcapture %}
 
-{% capture ParameterTypes %}
-    {% if request_parameters.size > 0 %}
-        parameterTypes: {{ "{" }}{% for parameter in request_parameters %}
-    {{ parameter.name }}: {{ "{" }}
-        structuralProperty: StructuralProperty.{{ parameter.structural_property }},
-        typeName: "{{ parameter.edm_type }}",{% if parameter.structural_property == "EnumerationType" and parameter.options.size > 0 %}
-        enumProperties: {{ "[" }}{% for option in parameter.options %}
-            {{ "{" }}
-                name: "{{ option.name }}",
-                value: {{ option.value }},
-            {{ "}" }},{% endfor %}
-        {{ "]" }}{% endif %}
-    {{ "}" }},{% endfor %}
-{{ "}" }}{% endif %}
+{% capture ParameterTypes %}{% if bound_parameter == "Entity" %}
+    entity: {{ "{" }} typeName: "{% if entity %}mscrm.{{ entity }}{% else %}mscrm.crmbaseentity{% endif %}", structuralProperty: StructuralProperty.EntityType{{ "}" }},{% endif %}{% if request_parameters.size > 0 %}{% for parameter in request_parameters %}
+{{ parameter.name }}: {{ "{" }} typeName: "{{ parameter.edm_type }}",structuralProperty: StructuralProperty.{{ parameter.structural_property }},{% if parameter.structural_property == "EnumerationType" and parameter.options.size > 0 %} enumProperties: {{ "[" }}{% for option in parameter.options %}{{ "{" }} name: "{{ option.name }}", value: {{ option.value }} {{ "}" }},{% endfor %}{{ "]" }}{% endif %}{{ "}" }},{% endfor %}
+{% endif %}
 {% endcapture %}
 
-export const {{ name }}Metadata: RequestMetadata = {{ "{" }}
+{% capture BoundConstructorParameter %}
+{% if bound_parameter == "Entity" %}
+public entity: {{ "{" }} entityType: {% if entity %}"{{ entity }}"{% else %}string{% endif %}, id: string {{ "}" }},
+{% endif %}
+{% endcapture %}
+
+{% capture ConstructorParameters %}
+{% for parameter in request_parameters %}{% capture DataType %}
+{% case parameter.data_type %}
+    {% when "Boolean" %}boolean
+    {% when "DateTime" %}string
+    {% when "Decimal" %}number
+    {% when "EntityCollection" %}{% if parameter.entity %}{{ parameter.entity }}[]{% else %}Entity[]{% endif %}
+    {% when "Entity" %}{% if parameter.entity %}{{ parameter.entity }}{% else %}Entity{% endif %}
+    {% when "EntityReference" %}{{ "{" }} "odata.type": {% if parameter.entity %}"Microsoft.Dynamics.CRM.{{ parameter.entity }}"{% else %}string{% endif %}, {% if parameter.primary_id_name %}{{ parameter.primary_id_name }}: string{% else %}[key: string]: string{% endif %} {{ "}" }}
+    {% when "Enumeration" %} EnumerationOption
+    {% when "Float" %} number
+    {% when "Guid" %} Guid
+    {% when "Integer" %}number
+    {% when "Money" %}number
+    {% when "Picklist" %}number
+    {% when "StringArray" %}string[]
+    {% when "String" %}string
+{% endcase %}{% endcapture %}
+public {{ parameter.name }}{% if parameter.is_optional %}?{% endif %}: {{ DataType | strip_newlines | strip }},{% endfor %}
+{% endcapture %}
+
+{% capture ResponseProperties %}
+{% for property in response_properties %}{% capture DataType %}
+{% case property.data_type %}
+    {% when "Boolean" %}boolean
+    {% when "DateTime" %}string
+    {% when "Decimal" %}number
+    {% when "EntityCollection" %}{% if property.entity %}{{ property.entity }}[]{% else %}Entity[]{% endif %}
+    {% when "Entity" %}{% if property.entity %}{{ property.entity }}{% else %}Entity{% endif %}
+    {% when "EntityReference" %}{{ "{" }} "odata.type": {% if property.entity %}"Microsoft.Dynamics.CRM.{{ property.entity }}"{% else %}string{% endif %}, {% if property.primary_id_name %}{{ property.primary_id_name }}: string{% else %}[key: string]: string{% endif %} {{ "}" }}
+    {% when "Enumeration" %} EnumerationOption
+    {% when "Float" %} number
+    {% when "Guid" %} string
+    {% when "Integer" %}number
+    {% when "Money" %}number
+    {% when "Picklist" %}number
+    {% when "StringArray" %}string[]
+    {% when "String" %}string
+{% endcase %}{% endcapture %}
+{{ property.name }}{% if property.is_optional %}?{% endif %}: {{ DataType | strip_newlines | strip }};{% endfor %}
+{% endcapture %}
+
+export const {{ MetadataName | strip }}: RequestMetadata = {{ "{" }}
     boundParameter: {{ BoundParameter | strip }},
     operationType: {{ OperationType | strip }},
-    operationName: {{ name }},
-    {{ ParameterTypes | strip }}
-{{ "}" }}
+    operationName: "{{ name }}",
+    parameterTypes: {{ "{" }}
+        {{ ParameterTypes | strip }}
+    {{ "}" }}
+{{ "}" }};
+
+export class {{ RequestName | strip }} implements ExecuteRequest {
+    constructor(
+        {{ BoundConstructorParameter | strip }}
+        {{ ConstructorParameters | strip }}
+    ){{ "{" }} {{ "}" }}
+
+    getMetadata(): RequestMetadata {
+        return {{ MetadataName | strip }};
+    }
+}
+
+export interface {{ ResponseName | strip }} extends ExecuteResponse {
+    {{ ResponseProperties | strip }}
+}

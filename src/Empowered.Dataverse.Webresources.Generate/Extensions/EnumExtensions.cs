@@ -4,38 +4,38 @@ namespace Empowered.Dataverse.Webresources.Generate.Extensions;
 
 public static class EnumExtensions
 {
-    internal static StructuralProperty ToStructuralProperty(this ParameterDataType parameterDataType) => parameterDataType switch
+    internal static StructuralProperty ToStructuralProperty(this DataType dataType) => dataType switch
     {
-        ParameterDataType.Boolean => StructuralProperty.PrimitiveType,
-        ParameterDataType.DateTime => StructuralProperty.PrimitiveType,
-        ParameterDataType.Decimal => StructuralProperty.PrimitiveType,
-        ParameterDataType.Entity => StructuralProperty.EntityType,
-        ParameterDataType.EntityReference => StructuralProperty.EntityType,
-        ParameterDataType.EntityCollection => StructuralProperty.Collection,
-        ParameterDataType.Enumeration => StructuralProperty.EnumerationType,
-        ParameterDataType.Float => StructuralProperty.PrimitiveType,
-        ParameterDataType.Guid => StructuralProperty.PrimitiveType,
-        ParameterDataType.Integer => StructuralProperty.PrimitiveType,
-        ParameterDataType.Money => StructuralProperty.PrimitiveType,
-        ParameterDataType.Picklist => StructuralProperty.PrimitiveType,
-        ParameterDataType.StringArray => StructuralProperty.Collection,
-        ParameterDataType.String => StructuralProperty.PrimitiveType,
-        _ => throw new ArgumentOutOfRangeException(nameof(parameterDataType), parameterDataType, $"Unknown data type {parameterDataType}!")
+        DataType.Boolean => StructuralProperty.PrimitiveType,
+        DataType.DateTime => StructuralProperty.PrimitiveType,
+        DataType.Decimal => StructuralProperty.PrimitiveType,
+        DataType.Entity => StructuralProperty.EntityType,
+        DataType.EntityReference => StructuralProperty.EntityType,
+        DataType.EntityCollection => StructuralProperty.Collection,
+        DataType.Enumeration => StructuralProperty.EnumerationType,
+        DataType.Float => StructuralProperty.PrimitiveType,
+        DataType.Guid => StructuralProperty.PrimitiveType,
+        DataType.Integer => StructuralProperty.PrimitiveType,
+        DataType.Money => StructuralProperty.PrimitiveType,
+        DataType.Picklist => StructuralProperty.PrimitiveType,
+        DataType.StringArray => StructuralProperty.Collection,
+        DataType.String => StructuralProperty.PrimitiveType,
+        _ => throw new ArgumentOutOfRangeException(nameof(dataType), dataType, $"Unknown data type {dataType}!")
     };
 
-    internal static string ToEdmTypeName(this ParameterDataType parameterDataType) => parameterDataType switch
+    internal static string ToEdmTypeName(this DataType dataType) => dataType switch
     {
-        ParameterDataType.Boolean => "Edm.Boolean",
-        ParameterDataType.DateTime => "Edm.DateTimeOffset",
-        ParameterDataType.Decimal => "Edm.Decimal",
-        ParameterDataType.Float => "Edm.Double",
-        ParameterDataType.Guid => "Edm.Guid",
-        ParameterDataType.Integer => "Edm.Int32",
-        ParameterDataType.Money => "Edm.Decimal",
-        ParameterDataType.Picklist => "Edm.Int32",
-        ParameterDataType.StringArray => "Collection(Edm.String)",
-        ParameterDataType.String => "Edm.String",
-        _ => throw new ArgumentOutOfRangeException(nameof(parameterDataType), parameterDataType,
-            $"Can't resolve EDM type for data type {parameterDataType} without additional information!")
+        DataType.Boolean => "Edm.Boolean",
+        DataType.DateTime => "Edm.DateTimeOffset",
+        DataType.Decimal => "Edm.Decimal",
+        DataType.Float => "Edm.Double",
+        DataType.Guid => "Edm.Guid",
+        DataType.Integer => "Edm.Int32",
+        DataType.Money => "Edm.Decimal",
+        DataType.Picklist => "Edm.Int32",
+        DataType.StringArray => "Collection(Edm.String)",
+        DataType.String => "Edm.String",
+        _ => throw new ArgumentOutOfRangeException(nameof(dataType), dataType,
+            $"Can't resolve EDM type for data type {dataType} without additional information!")
     };
 }
