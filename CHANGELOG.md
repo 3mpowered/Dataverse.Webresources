@@ -1,3 +1,10 @@
+## [1.2.4](https://github.com/3mpowered/Dataverse.Webresources/compare/v1.2.3...v1.2.4) (2025-03-22)
+
+
+### Bug Fixes
+
+* **push:** use relative instead of absolute path for persisted configuration directory ([#4](https://github.com/3mpowered/Dataverse.Webresources/issues/4)) ([30c84b6](https://github.com/3mpowered/Dataverse.Webresources/commit/30c84b6b346cdafea25be3463f7853e821a93091))
+
 ## [1.2.3](https://github.com/3mpowered/Dataverse.Webresources/compare/v1.2.2...v1.2.3) (2024-12-28)
 
 
