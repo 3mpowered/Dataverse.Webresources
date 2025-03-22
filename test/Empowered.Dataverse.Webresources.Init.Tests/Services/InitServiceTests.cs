@@ -241,6 +241,40 @@ public class InitServiceTests
     }
 
     [Fact]
+    public void ShouldThrowOnOpenProjectInVisualStudioCode()
+    {
+        var baseDir = Path.GetTempPath();
+        _fileSystem.Directory.CreateDirectory(baseDir);
+        _cliWrapper.NpmInstall(Arg.Any<string>())
+            .Returns(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1)));
+        _cliWrapper.NpmUpgradeDependencies(Arg.Any<string>())
+            .Returns(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1)));
+
+        var options = new InitOptions
+        {
+            Directory = _fileSystem.DirectoryInfo.Wrap(new DirectoryInfo(baseDir)).FullName,
+            Project = "my.project",
+            GlobalNamespace = "any",
+            Author = "author",
+            Force = false,
+            Repository = "https://github.com",
+            UpgradeDependencies = true
+        };
+        var innerException = new CommandExecutionException(Cli.Wrap("code"), 1, "error");
+        _cliWrapper.VsCodeOpen(Arg.Any<string>()).ThrowsForAnyArgs(innerException);
+
+        Action actor = () => _initService.Init(options).GetAwaiter().GetResult();
+
+        actor
+            .Should()
+            .ThrowExactly<InvalidOperationException>()
+            .WithMessage(
+                $"Opening project directory {options.Directory} in visual studio code failed with error: {innerException.Message}")
+            .WithInnerException(innerException.GetType())
+            .WithMessage(innerException.Message);
+    }
+
+    [Fact]
     public async Task ShouldNotUpgradeDependenciesWhenSkipUpgradeDependenciesIsSet()
     {
         var baseDir = Path.GetTempPath();

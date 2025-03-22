@@ -5,6 +5,7 @@ using Empowered.Dataverse.Webresources.Commands.Observers;
 using Empowered.Dataverse.Webresources.Init.Events;
 using Empowered.Dataverse.Webresources.Model;
 using Empowered.Dataverse.Webresources.Push.Events;
+using Empowered.Dataverse.Webresources.Push.Extensions;
 using Empowered.Dataverse.Webresources.Push.Model;
 using FluentAssertions;
 using Microsoft.Xrm.Sdk;

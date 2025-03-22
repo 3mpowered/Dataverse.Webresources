@@ -64,9 +64,11 @@ public class OptionResolverTests
     [Fact]
     public void ShouldResolvePushOptionsFromConfigFile()
     {
+        var webresourcesDirectory = Path.Combine(Path.GetTempPath(), "dist");
         var fileOptions = new PushOptions
         {
-            Directory = Path.GetTempPath(),
+            Directory = webresourcesDirectory,
+            ConfigurationFilePath = s_configPath,
             Solution = "customizations",
             IncludeSubDirectories = false,
             PublisherPrefix = "msdyn",
@@ -91,7 +93,7 @@ public class OptionResolverTests
         var resolvedOptions = _resolver.Resolve<PushOptions, PushArguments>(pushArguments);
 
         resolvedOptions.Should().NotBeNull();
-        resolvedOptions.Directory.Should().Be(fileOptions.Directory);
+        resolvedOptions.Directory.Should().Be(webresourcesDirectory);
         resolvedOptions.FileExtensions.Should().BeEquivalentTo(fileOptions.FileExtensions);
         resolvedOptions.ForceUpdate.Should().Be(fileOptions.ForceUpdate);
         resolvedOptions.Publish.Should().Be(fileOptions.Publish);
@@ -100,7 +102,7 @@ public class OptionResolverTests
         resolvedOptions.DefaultWebresourceType.Should().Be(fileOptions.DefaultWebresourceType);
         resolvedOptions.IncludeSubDirectories.Should().Be(fileOptions.IncludeSubDirectories);
         resolvedOptions.AllowManagedUpdates.Should().Be(fileOptions.AllowManagedUpdates);
-        resolvedOptions.DirectoryInfo.FullName.Should().Be(fileOptions.DirectoryInfo.FullName);
+        resolvedOptions.DirectoryInfo.FullName.Should().Be(webresourcesDirectory);
     }
 
     [Fact]
