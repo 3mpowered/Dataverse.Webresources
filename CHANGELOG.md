@@ -1,3 +1,10 @@
+## [1.2.5](https://github.com/3mpowered/Dataverse.Webresources/compare/v1.2.4...v1.2.5) (2025-03-22)
+
+
+### Bug Fixes
+
+* fix release ([2bc657b](https://github.com/3mpowered/Dataverse.Webresources/commit/2bc657b20e593a65418aa599b2189ff15543071d))
+
 ## [1.2.4](https://github.com/3mpowered/Dataverse.Webresources/compare/v1.2.3...v1.2.4) (2025-03-22)
 
 
