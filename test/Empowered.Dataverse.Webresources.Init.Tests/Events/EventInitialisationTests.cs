@@ -2,7 +2,7 @@
 using CliWrap;
 using Empowered.Dataverse.Webresources.Init.Events;
 using Empowered.Dataverse.Webresources.Init.Model;
-using FluentAssertions;
+using Shouldly;
 
 namespace Empowered.Dataverse.Webresources.Init.Tests.Events;
 
@@ -21,10 +21,10 @@ public class EventInitialisationTests
         };
         var initInvokedEvent = InitInvokedEvent.From(initOptions);
 
-        initInvokedEvent.Should().NotBeNull();
-        initInvokedEvent.Directory.FullName.Should().Be(initOptions.Directory);
-        initInvokedEvent.Project.Should().Be(initOptions.Project);
-        initInvokedEvent.GlobalNamespace.Should().Be(initOptions.GlobalNamespace);
+        initInvokedEvent.ShouldNotBeNull();
+        initInvokedEvent.Directory.FullName.ShouldBe(initOptions.Directory);
+        initInvokedEvent.Project.ShouldBe(initOptions.Project);
+        initInvokedEvent.GlobalNamespace.ShouldBe(initOptions.GlobalNamespace);
     }
 
     [Fact]
@@ -34,8 +34,8 @@ public class EventInitialisationTests
 
         var directoryCreatedEvent = DirectoryCreatedEvent.From(directoryInfo);
 
-        directoryCreatedEvent.Should().NotBeNull();
-        directoryCreatedEvent.Directory.Should().BeEquivalentTo(directoryInfo);
+        directoryCreatedEvent.ShouldNotBeNull();
+        directoryCreatedEvent.Directory.ShouldBeEquivalentTo(directoryInfo);
     }
 
     [Fact]
@@ -45,8 +45,8 @@ public class EventInitialisationTests
 
         var fileCreatedEvent = FileCreatedEvent.From(fileInfo);
 
-        fileCreatedEvent.Should().NotBeNull();
-        fileCreatedEvent.File.Should().BeEquivalentTo(fileInfo);
+        fileCreatedEvent.ShouldNotBeNull();
+        fileCreatedEvent.File.ShouldBeEquivalentTo(fileInfo);
     }
 
     [Fact]
@@ -56,8 +56,8 @@ public class EventInitialisationTests
 
         var npmInstallSucceededEvent = NpmInstallSucceededEvent.From(commandResult);
 
-        npmInstallSucceededEvent.Should().NotBeNull();
-        npmInstallSucceededEvent.Result.Should().BeEquivalentTo(commandResult);
+        npmInstallSucceededEvent.ShouldNotBeNull();
+        npmInstallSucceededEvent.Result.ShouldBeEquivalentTo(commandResult);
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class EventInitialisationTests
 
         var npmUpgradeSucceededEvent = NpmUpgradeSucceededEvent.From(commandResult);
 
-        npmUpgradeSucceededEvent.Should().NotBeNull();
-        npmUpgradeSucceededEvent.Result.Should().BeEquivalentTo(commandResult);
+        npmUpgradeSucceededEvent.ShouldNotBeNull();
+        npmUpgradeSucceededEvent.Result.ShouldBeEquivalentTo(commandResult);
     }
 }

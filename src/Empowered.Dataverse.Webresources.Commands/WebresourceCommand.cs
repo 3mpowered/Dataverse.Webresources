@@ -17,7 +17,7 @@ public class WebresourceCommand(
     IOptionResolver optionResolver,
     IPushOptionWriter optionWriter)
 {
-    public async Task<int> Push(PushArguments arguments)
+    public int Push(PushArguments arguments)
     {
         var options = optionResolver.Resolve<PushOptions, PushArguments>(arguments);
         var results = pushService.PushWebresources(options);
@@ -30,7 +30,7 @@ public class WebresourceCommand(
             console.Info($"Wrote invoked arguments to the json configuration file {targetPath.FullName.Italic()}");
         }
 
-        return await ExitCodes.Success;
+        return ExitCodes.Success;
     }
 
     public async Task<int> Init(InitArguments arguments)
@@ -39,6 +39,6 @@ public class WebresourceCommand(
         var projectDirectory = await initService.Init(options);
         console.Success(
             $"Initialized project {arguments.Project.Italic()} in directory {projectDirectory.FullName.Italic()}");
-        return await ExitCodes.Success;
+        return ExitCodes.Success;
     }
 }

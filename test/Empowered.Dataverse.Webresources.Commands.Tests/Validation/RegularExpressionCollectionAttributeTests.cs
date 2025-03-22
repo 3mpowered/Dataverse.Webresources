@@ -1,6 +1,5 @@
 ﻿using Empowered.Dataverse.Webresources.Commands.Validation;
-using FluentAssertions;
-using Xunit;
+using Shouldly;
 
 namespace Empowered.Dataverse.Webresources.Commands.Tests.Validation;
 
@@ -14,8 +13,7 @@ public class RegularExpressionCollectionAttributeTests
         string[] collection = [".js", ".json", ".html"];
         new RegularExpressionCollectionAttribute(Pattern)
             .IsValid(collection)
-            .Should()
-            .BeTrue();
+            .ShouldBeTrue();
     }
 
     [Fact]
@@ -23,8 +21,7 @@ public class RegularExpressionCollectionAttributeTests
     {
         new RegularExpressionCollectionAttribute(Pattern)
             .IsValid(1)
-            .Should()
-            .BeFalse();
+            .ShouldBeFalse();
     }
 
     [Fact]
@@ -33,8 +30,7 @@ public class RegularExpressionCollectionAttributeTests
         string[] collection = ["js", ".json", "html"];
         new RegularExpressionCollectionAttribute(Pattern)
             .IsValid(collection)
-            .Should()
-            .BeFalse();
+            .ShouldBeFalse();
     }
 
     [Fact]
@@ -43,16 +39,14 @@ public class RegularExpressionCollectionAttributeTests
         string[] collection = [];
         new RegularExpressionCollectionAttribute(Pattern)
             .IsValid(collection)
-            .Should()
-            .BeTrue();
+            .ShouldBeTrue();
     }
 
     [Fact]
     public void ShouldBeValidForNullValues()
-    { ;
+    {
         new RegularExpressionCollectionAttribute(Pattern)
             .IsValid(null)
-            .Should()
-            .BeTrue();
+            .ShouldBeTrue();
     }
 }

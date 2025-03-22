@@ -1,8 +1,8 @@
 ﻿using Empowered.Dataverse.Webresources.Model;
 using Empowered.Dataverse.Webresources.Push.Events;
 using Empowered.Dataverse.Webresources.Push.Model;
-using FluentAssertions;
 using Microsoft.Xrm.Sdk;
+using Shouldly;
 
 namespace Empowered.Dataverse.Webresources.Push.Tests.Events;
 
@@ -22,10 +22,10 @@ public class EventInitializationTests
 
         var publishedWebresourcesEvent = PublishedWebresourcesEvent.From(webresources);
 
-        publishedWebresourcesEvent.Should().NotBeNull();
-        publishedWebresourcesEvent.Webresources.Should().NotBeNullOrEmpty();
-        publishedWebresourcesEvent.Webresources.Should().HaveCount(webresources.Count);
-        publishedWebresourcesEvent.Webresources.Should().BeEquivalentTo(webresources);
+        publishedWebresourcesEvent.ShouldNotBeNull();
+        publishedWebresourcesEvent.Webresources.ShouldNotBeNull().ShouldNotBeEmpty();
+        publishedWebresourcesEvent.Webresources.Count.ShouldBe(webresources.Count);
+        publishedWebresourcesEvent.Webresources.ShouldBeEquivalentTo(webresources);
     }
 
     [Fact]
@@ -39,10 +39,10 @@ public class EventInitializationTests
 
         var pushInvokedEvent = PushInvokedEvent.From(pushOptions);
 
-        pushInvokedEvent.Should().NotBeNull();
-        pushInvokedEvent.Options.Should().BeEquivalentTo(pushOptions);
-        pushInvokedEvent.Directory.FullName.Should().Be(pushOptions.Directory);
-        pushInvokedEvent.SolutionName.Should().Be(pushOptions.Solution);
+        pushInvokedEvent.ShouldNotBeNull();
+        pushInvokedEvent.Options.ShouldBeEquivalentTo(pushOptions);
+        pushInvokedEvent.Directory.FullName.ShouldBe(pushOptions.Directory);
+        pushInvokedEvent.SolutionName.ShouldBe(pushOptions.Solution);
     }
 
     [Theory]
@@ -61,13 +61,13 @@ public class EventInitializationTests
 
         var retrievedPublisherEvent = RetrievedPublisherEvent.From(publisher, retrievedFromConfiguration);
 
-        retrievedPublisherEvent.Should().NotBeNull();
+        retrievedPublisherEvent.ShouldNotBeNull();
 
-        retrievedPublisherEvent.Id.Should().Be(publisher.Id);
-        retrievedPublisherEvent.UniqueName.Should().Be(publisher.UniqueName);
-        retrievedPublisherEvent.FriendlyName.Should().Be(publisher.FriendlyName);
-        retrievedPublisherEvent.CustomizationPrefix.Should().Be(publisher.CustomizationPrefix);
-        retrievedPublisherEvent.Source.Should().Be(expectedSource);
+        retrievedPublisherEvent.Id.ShouldBe(publisher.Id);
+        retrievedPublisherEvent.UniqueName.ShouldBe(publisher.UniqueName);
+        retrievedPublisherEvent.FriendlyName.ShouldBe(publisher.FriendlyName);
+        retrievedPublisherEvent.CustomizationPrefix.ShouldBe(publisher.CustomizationPrefix);
+        retrievedPublisherEvent.Source.ShouldBe(expectedSource);
     }
 
     [Fact]
@@ -92,9 +92,9 @@ public class EventInitializationTests
             .FromRange([pushResult], pushOptions)
             .Single();
 
-        pushedWebresourceEvent.Should().NotBeNull();
-        pushedWebresourceEvent.PushResult.Should().BeEquivalentTo(pushResult);
-        pushedWebresourceEvent.Options.Should().BeEquivalentTo(pushOptions);
+        pushedWebresourceEvent.ShouldNotBeNull();
+        pushedWebresourceEvent.PushResult.ShouldBeEquivalentTo(pushResult);
+        pushedWebresourceEvent.Options.ShouldBeEquivalentTo(pushOptions);
     }
 
     [Fact]
@@ -117,10 +117,10 @@ public class EventInitializationTests
             .FromRange(pushOptions, [webresourceFile])
             .Single();
 
-        retrievedFileEvent.Should().NotBeNull();
-        retrievedFileEvent.File.Should().BeEquivalentTo(webresourceFile);
-        retrievedFileEvent.Options.Should().BeEquivalentTo(pushOptions);
-        retrievedFileEvent.Directory.FullName.Should().Be(pushOptions.Directory);
+        retrievedFileEvent.ShouldNotBeNull();
+        retrievedFileEvent.File.ShouldBeEquivalentTo(webresourceFile);
+        retrievedFileEvent.Options.ShouldBeEquivalentTo(pushOptions);
+        retrievedFileEvent.Directory.FullName.ShouldBe(pushOptions.Directory);
     }
 
     [Fact]
@@ -137,12 +137,12 @@ public class EventInitializationTests
 
         var retrievedSolutionEvent = RetrievedSolutionEvent.From(solution);
 
-        retrievedSolutionEvent.Should().NotBeNull();
-        retrievedSolutionEvent.Id.Should().Be(solution.Id);
-        retrievedSolutionEvent.UniqueName.Should().Be(solution.UniqueName);
-        retrievedSolutionEvent.FriendlyName.Should().Be(solution.FriendlyName);
-        retrievedSolutionEvent.Version.Should().Be(solution.Version);
-        retrievedSolutionEvent.PublisherId.Should().BeEquivalentTo(solution.PublisherId);
-        retrievedSolutionEvent.PublisherId.Id.Should().Be(solution.PublisherId.Id);
+        retrievedSolutionEvent.ShouldNotBeNull();
+        retrievedSolutionEvent.Id.ShouldBe(solution.Id);
+        retrievedSolutionEvent.UniqueName.ShouldBe(solution.UniqueName);
+        retrievedSolutionEvent.FriendlyName.ShouldBe(solution.FriendlyName);
+        retrievedSolutionEvent.Version.ShouldBe(solution.Version);
+        retrievedSolutionEvent.PublisherId.ShouldBeEquivalentTo(solution.PublisherId);
+        retrievedSolutionEvent.PublisherId.Id.ShouldBe(solution.PublisherId.Id);
     }
 }

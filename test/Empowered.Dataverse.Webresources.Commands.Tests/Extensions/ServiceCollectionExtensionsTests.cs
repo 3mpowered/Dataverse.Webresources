@@ -1,9 +1,8 @@
 ﻿using Empowered.Dataverse.Webresources.Commands.Extensions;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xrm.Sdk;
 using NSubstitute;
-using Xunit;
+using Shouldly;
 
 namespace Empowered.Dataverse.Webresources.Commands.Tests.Extensions;
 
@@ -20,6 +19,6 @@ public class ServiceCollectionExtensionsTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
         var webresourceCommand = serviceProvider.GetRequiredService<WebresourceCommand>();
 
-        webresourceCommand.Should().NotBeNull();
+        webresourceCommand.ShouldNotBeNull();
     }
 }

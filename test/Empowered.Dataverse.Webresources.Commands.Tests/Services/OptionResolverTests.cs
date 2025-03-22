@@ -5,9 +5,8 @@ using Empowered.Dataverse.Webresources.Commands.Services;
 using Empowered.Dataverse.Webresources.Init.Model;
 using Empowered.Dataverse.Webresources.Model;
 using Empowered.Dataverse.Webresources.Push.Model;
-using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
-using Xunit;
+using Shouldly;
 
 namespace Empowered.Dataverse.Webresources.Commands.Tests.Services;
 
@@ -46,19 +45,19 @@ public class OptionResolverTests
 
         var pushOptions = _resolver.Resolve<PushOptions, PushArguments>(arguments);
 
-        pushOptions.Should().NotBeNull();
-        pushOptions.DirectoryInfo.Should().NotBeNull();
-        pushOptions.DirectoryInfo.FullName.Should().BeEquivalentTo(arguments.Directory.FullName);
-        pushOptions.Directory.Should().Be(arguments.Directory.FullName);
-        pushOptions.Solution.Should().Be(arguments.Solution);
-        pushOptions.ForceUpdate.Should().Be(arguments.ForceUpdate.Value);
-        pushOptions.FileExtensions.Should().BeEquivalentTo(arguments.FileExtensions);
-        pushOptions.FileExtensionsString.Should().Be(string.Join(", ", arguments.FileExtensions));
-        pushOptions.PublisherPrefix.Should().Be(arguments.Publisher);
-        pushOptions.WebresourcePrefix.Should().Be(arguments.Prefix);
-        pushOptions.AllowManagedUpdates.Should().Be(arguments.AllowManagedUpdates.Value);
-        pushOptions.DefaultWebresourceType.Should().Be(arguments.DefaultType.Value);
-        pushOptions.IncludeSubDirectories.Should().Be(arguments.Recursive.Value);
+        pushOptions.ShouldNotBeNull();
+        pushOptions.DirectoryInfo.ShouldNotBeNull();
+        pushOptions.DirectoryInfo.FullName.ShouldBeEquivalentTo(arguments.Directory.FullName);
+        pushOptions.Directory.ShouldBe(arguments.Directory.FullName);
+        pushOptions.Solution.ShouldBe(arguments.Solution);
+        pushOptions.ForceUpdate.ShouldBe(arguments.ForceUpdate.Value);
+        pushOptions.FileExtensions.ShouldBeEquivalentTo(arguments.FileExtensions);
+        pushOptions.FileExtensionsString.ShouldBe(string.Join(", ", arguments.FileExtensions));
+        pushOptions.PublisherPrefix.ShouldBe(arguments.Publisher);
+        pushOptions.WebresourcePrefix.ShouldBe(arguments.Prefix);
+        pushOptions.AllowManagedUpdates.ShouldBe(arguments.AllowManagedUpdates.Value);
+        pushOptions.DefaultWebresourceType.ShouldBe(arguments.DefaultType.Value);
+        pushOptions.IncludeSubDirectories.ShouldBe(arguments.Recursive.Value);
     }
 
     [Fact]
@@ -92,17 +91,17 @@ public class OptionResolverTests
         };
         var resolvedOptions = _resolver.Resolve<PushOptions, PushArguments>(pushArguments);
 
-        resolvedOptions.Should().NotBeNull();
-        resolvedOptions.Directory.Should().Be(webresourcesDirectory);
-        resolvedOptions.FileExtensions.Should().BeEquivalentTo(fileOptions.FileExtensions);
-        resolvedOptions.ForceUpdate.Should().Be(fileOptions.ForceUpdate);
-        resolvedOptions.Publish.Should().Be(fileOptions.Publish);
-        resolvedOptions.Solution.Should().Be(fileOptions.Solution);
-        resolvedOptions.WebresourcePrefix.Should().Be(fileOptions.WebresourcePrefix);
-        resolvedOptions.DefaultWebresourceType.Should().Be(fileOptions.DefaultWebresourceType);
-        resolvedOptions.IncludeSubDirectories.Should().Be(fileOptions.IncludeSubDirectories);
-        resolvedOptions.AllowManagedUpdates.Should().Be(fileOptions.AllowManagedUpdates);
-        resolvedOptions.DirectoryInfo.FullName.Should().Be(webresourcesDirectory);
+        resolvedOptions.ShouldNotBeNull();
+        resolvedOptions.Directory.ShouldBe(webresourcesDirectory);
+        resolvedOptions.FileExtensions.ShouldBeEquivalentTo(fileOptions.FileExtensions);
+        resolvedOptions.ForceUpdate.ShouldBe(fileOptions.ForceUpdate);
+        resolvedOptions.Publish.ShouldBe(fileOptions.Publish);
+        resolvedOptions.Solution.ShouldBe(fileOptions.Solution);
+        resolvedOptions.WebresourcePrefix.ShouldBe(fileOptions.WebresourcePrefix);
+        resolvedOptions.DefaultWebresourceType.ShouldBe(fileOptions.DefaultWebresourceType);
+        resolvedOptions.IncludeSubDirectories.ShouldBe(fileOptions.IncludeSubDirectories);
+        resolvedOptions.AllowManagedUpdates.ShouldBe(fileOptions.AllowManagedUpdates);
+        resolvedOptions.DirectoryInfo.FullName.ShouldBe(webresourcesDirectory);
     }
 
     [Fact]
@@ -113,14 +112,11 @@ public class OptionResolverTests
             Configuration = new FileInfo(s_configPath)
         };
 
-        Action actor = () => _resolver.Resolve<PushOptions, PushArguments>(pushArguments);
+        var exception =
+            Should.Throw<ArgumentException>(() => _resolver.Resolve<PushOptions, PushArguments>(pushArguments));
 
-        actor.Should()
-            .ThrowExactly<ArgumentException>()
-            .WithParameterName("arguments")
-            .And
-            .Message.Should()
-            .StartWith($"Configuration file {pushArguments.Configuration.FullName} doesn't exist!");
+        exception.ParamName.ShouldBe("arguments");
+        exception.Message.ShouldStartWith($"Configuration file {pushArguments.Configuration.FullName} doesn't exist!");
     }
 
     [Fact]
@@ -132,10 +128,7 @@ public class OptionResolverTests
             Configuration = new FileInfo(s_configPath)
         };
 
-        Action actor = () => _resolver.Resolve<PushOptions, PushArguments>(pushArguments);
-
-        actor.Should()
-            .ThrowExactly<JsonException>();
+        _ = Should.Throw<JsonException>(() => _resolver.Resolve<PushOptions, PushArguments>(pushArguments));
     }
 
     [Fact]
@@ -147,13 +140,12 @@ public class OptionResolverTests
             Configuration = new FileInfo(s_configPath)
         };
 
-        Action actor = () => _resolver.Resolve<PushOptions, PushArguments>(pushArguments);
+        var exception =
+            Should.Throw<ArgumentException>(() => _resolver.Resolve<PushOptions, PushArguments>(pushArguments));
 
-        actor.Should()
-            .ThrowExactly<ArgumentException>()
-            .WithParameterName("arguments")
-            .And.Message
-            .Should().StartWith(
+        exception.ParamName.ShouldBe("arguments");
+        exception.Message
+            .ShouldStartWith(
                 $"Couldn't deserialize configuration file {pushArguments.Configuration.FullName} to configuration object");
     }
 
@@ -178,13 +170,10 @@ public class OptionResolverTests
             Publish = true
         };
 
-        Action actor = () => _resolver.Resolve<PushOptions, PushArguments>(arguments);
+        var exception = Should.Throw<ArgumentException>(() => _resolver.Resolve<PushOptions, PushArguments>(arguments));
 
-        actor.Should()
-            .ThrowExactly<ArgumentException>()
-            .WithParameterName("arguments")
-            .And.Message
-            .Should().StartWith("Directory cannot be null");
+        exception.ParamName.ShouldBe("arguments");
+        exception.Message.ShouldStartWith("Directory cannot be null");
     }
 
     [Fact]
@@ -208,13 +197,10 @@ public class OptionResolverTests
             Publish = true
         };
 
-        Action actor = () => _resolver.Resolve<PushOptions, PushArguments>(arguments);
+        var exception = Should.Throw<ArgumentException>(() => _resolver.Resolve<PushOptions, PushArguments>(arguments));
 
-        actor.Should()
-            .ThrowExactly<ArgumentException>()
-            .WithParameterName("arguments")
-            .And.Message
-            .Should().StartWith("Solution cannot be null or empty");
+        exception.ParamName.ShouldBe("arguments");
+        exception.Message.ShouldStartWith("Solution cannot be null or empty");
     }
 
     [Fact]
@@ -233,13 +219,13 @@ public class OptionResolverTests
 
         var options = _resolver.Resolve<InitOptions, InitArguments>(arguments);
 
-        options.Directory.Should().Be(arguments.Directory.FullName);
-        options.DirectoryInfo.FullName.Should().BeEquivalentTo(arguments.Directory.FullName);
-        options.Force.Should().Be(arguments.Force);
-        options.Project.Should().Be(arguments.Project);
-        options.GlobalNamespace.Should().Be(arguments.GlobalNamespace);
-        options.Author.Should().Be(arguments.Author);
-        options.Repository.Should().Be(arguments.Repository.ToString());
-        options.UpgradeDependencies.Should().Be(arguments.UpgradeDependencies);
+        options.Directory.ShouldBe(arguments.Directory.FullName);
+        options.DirectoryInfo.FullName.ShouldBeEquivalentTo(arguments.Directory.FullName);
+        options.Force.ShouldBe(arguments.Force);
+        options.Project.ShouldBe(arguments.Project);
+        options.GlobalNamespace.ShouldBe(arguments.GlobalNamespace);
+        options.Author.ShouldBe(arguments.Author);
+        options.Repository.ShouldBe(arguments.Repository.ToString());
+        options.UpgradeDependencies.ShouldBe(arguments.UpgradeDependencies);
     }
 }
