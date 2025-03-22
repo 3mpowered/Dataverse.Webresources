@@ -7,8 +7,8 @@ using Empowered.Dataverse.Webresources.Model;
 using Empowered.Dataverse.Webresources.Push.Events;
 using Empowered.Dataverse.Webresources.Push.Extensions;
 using Empowered.Dataverse.Webresources.Push.Model;
-using FluentAssertions;
 using Microsoft.Xrm.Sdk;
+using Shouldly;
 using Spectre.Console.Testing;
 
 namespace Empowered.Dataverse.Webresources.Commands.Tests.Observers;
@@ -27,7 +27,7 @@ public class ConsoleObserverTests
     public void ShouldPrintOnCompletion()
     {
         _consoleObserver.OnCompleted();
-        _console.Output.Should().StartWith("Finished command");
+        _console.Output.ShouldStartWith("Finished command");
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class ConsoleObserverTests
     {
         const string errorMessage = "Something went wrong";
         _consoleObserver.OnError(new InvalidOperationException(errorMessage));
-        _console.Output.Should().StartWith($"Command failed with error: {errorMessage}");
+        _console.Output.ShouldStartWith($"Command failed with error: {errorMessage}");
     }
 
     [Fact]
@@ -48,7 +48,8 @@ public class ConsoleObserverTests
         var @event = PublishedWebresourcesEvent.From(webresources);
 
         _consoleObserver.OnNext(@event);
-        _console.Output.Should().StartWith($"Published {@event.Webresources.Count} webresources");
+        _console.Output
+            .ShouldStartWith($"Published {@event.Webresources.Count} webresources");
     }
 
     [Fact]
@@ -75,7 +76,8 @@ public class ConsoleObserverTests
         // TODO: where does the \n in the output come from? Seems like an issue with the test console.
         var expected =
             $"{@event.PushResult.PushState.Format()} file {@event.PushResult.File.FilePath}";
-        _console.Output.Replace(Environment.NewLine, string.Empty).Should().StartWith(expected);
+        _console.Output.Replace(Environment.NewLine, string.Empty)
+            .ShouldStartWith(expected);
     }
 
     [Fact]
@@ -91,7 +93,8 @@ public class ConsoleObserverTests
         _consoleObserver.OnNext(@event);
         var expected =
             $"Pushing webresources from directory {@event.Directory.FullName}";
-        _console.Output.Replace(Environment.NewLine, string.Empty).Should().StartWith(expected);
+        _console.Output.Replace(Environment.NewLine, string.Empty)
+            .ShouldStartWith(expected);
     }
 
     [Fact]
@@ -114,7 +117,9 @@ public class ConsoleObserverTests
         _consoleObserver.OnNext(@event);
 
         var expected = $"Found file {@event.File.FileName} from file path {@event.File.FilePath}";
-        _console.Output.Replace(Environment.NewLine, string.Empty).Should().StartWith(expected);
+        _console.Output
+            .Replace(Environment.NewLine, string.Empty)
+            .ShouldStartWith(expected);
     }
 
     [Fact]
@@ -133,7 +138,9 @@ public class ConsoleObserverTests
 
         var expected =
             $"Retrieved publisher {@event.UniqueName} with friendly name {@event.FriendlyName}";
-        _console.Output.Replace(Environment.NewLine, string.Empty).Should().StartWith(expected);
+        _console.Output
+            .Replace(Environment.NewLine, string.Empty)
+            .ShouldStartWith(expected);
     }
 
     [Fact]
@@ -151,7 +158,9 @@ public class ConsoleObserverTests
         _consoleObserver.OnNext(@event);
 
         var expected = $"Retrieved solution {@event.UniqueName} with friendly name {@event.FriendlyName}";
-        _console.Output.Replace(Environment.NewLine, string.Empty).Should().StartWith(expected);
+        _console.Output
+            .Replace(Environment.NewLine, string.Empty)
+            .ShouldStartWith(expected);
     }
 
     [Fact]
@@ -166,8 +175,9 @@ public class ConsoleObserverTests
 
         _consoleObserver.OnNext(@event);
 
-        _console.Output.Replace(Environment.NewLine, string.Empty).Should()
-            .StartWith($"Initializing webresource project {@event.Project} in directory");
+        _console.Output
+            .Replace(Environment.NewLine, string.Empty)
+            .ShouldStartWith($"Initializing webresource project {@event.Project} in directory");
     }
 
     [Fact]
@@ -182,8 +192,7 @@ public class ConsoleObserverTests
         _consoleObserver.OnNext(@event);
 
         _console.Output.Replace(Environment.NewLine, string.Empty)
-            .Should()
-            .StartWith($"Created directory {@event.Directory.Name}");
+            .ShouldStartWith($"Created directory {@event.Directory.Name}");
     }
 
     [Fact]
@@ -198,37 +207,34 @@ public class ConsoleObserverTests
         _consoleObserver.OnNext(@event);
 
         _console.Output.Replace(Environment.NewLine, string.Empty)
-            .Should()
-            .StartWith($"Created file {@event.File.Name}");
+            .ShouldStartWith($"Created file {@event.File.Name}");
     }
 
     [Fact]
-    public async Task ShouldPrintNpmInstallSucceededOnNext()
+    public void ShouldPrintNpmInstallSucceededOnNext()
     {
         var @event = new NpmInstallSucceededEvent
         {
-            Result = new CommandResult(await ExitCodes.Success, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1))
+            Result = new CommandResult(ExitCodes.Success, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1))
         };
 
         _consoleObserver.OnNext(@event);
 
         _console.Output.Replace(Environment.NewLine, string.Empty)
-            .Should()
-            .StartWith($"npm install succeeded in {@event.Result.RunTime.Milliseconds} milliseconds");
+            .ShouldStartWith($"npm install succeeded in {@event.Result.RunTime.Milliseconds} milliseconds");
     }
 
     [Fact]
-    public async Task ShouldPrintNpmUpgradeSucceededOnNext()
+    public void ShouldPrintNpmUpgradeSucceededOnNext()
     {
         var @event = new NpmUpgradeSucceededEvent
         {
-            Result = new CommandResult(await ExitCodes.Success, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1))
+            Result = new CommandResult(ExitCodes.Success, DateTimeOffset.Now, DateTimeOffset.Now.AddSeconds(1))
         };
 
         _consoleObserver.OnNext(@event);
 
         _console.Output.Replace(Environment.NewLine, string.Empty)
-            .Should()
-            .StartWith($"npm run dependencies:upgrade succeeded in {@event.Result.RunTime.Milliseconds} milliseconds");
+            .ShouldStartWith($"npm run dependencies:upgrade succeeded in {@event.Result.RunTime.Milliseconds} milliseconds");
     }
 }

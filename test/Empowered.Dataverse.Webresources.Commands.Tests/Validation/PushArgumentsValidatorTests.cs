@@ -3,9 +3,8 @@ using System.Text.Json;
 using Empowered.Dataverse.Webresources.Commands.Arguments;
 using Empowered.Dataverse.Webresources.Commands.Validation;
 using Empowered.Dataverse.Webresources.Push.Model;
-using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
-using Xunit;
+using Shouldly;
 
 namespace Empowered.Dataverse.Webresources.Commands.Tests.Validation;
 
@@ -37,7 +36,7 @@ public class PushArgumentsValidatorTests
 
         var validationResult = _validator.Validate(arguments);
 
-        validationResult.IsValid.Should().BeTrue();
+        validationResult.IsValid.ShouldBeTrue();
     }
 
     [Fact]
@@ -51,11 +50,10 @@ public class PushArgumentsValidatorTests
 
         var validationResult = _validator.Validate(arguments);
 
-        validationResult.IsValid.Should().BeFalse();
-        validationResult.Errors.Should()
-            .ContainSingle(error => error.PropertyName == nameof(PushArguments.Configuration)
-                                    && error.ErrorMessage ==
-                                    $"file {arguments.Configuration!.FullName} does not exist");
+        validationResult.IsValid.ShouldBeFalse();
+        validationResult.Errors.ShouldContain(error => error.PropertyName == nameof(PushArguments.Configuration)
+                                                                && error.ErrorMessage ==
+                                                                $"file {arguments.Configuration!.FullName} does not exist");
     }
 
     [Fact]
@@ -71,9 +69,8 @@ public class PushArgumentsValidatorTests
 
         var validationResult = _validator.Validate(arguments);
 
-        validationResult.IsValid.Should().BeFalse();
-        validationResult.Errors.Should()
-            .ContainSingle(error => error.PropertyName == nameof(PushArguments.Configuration)
+        validationResult.IsValid.ShouldBeFalse();
+        validationResult.Errors.ShouldContain(error => error.PropertyName == nameof(PushArguments.Configuration)
                                     && error.ErrorMessage ==
                                     $"File {arguments.Configuration!.FullName} does not contain a valid JSON configuration");
     }
@@ -88,9 +85,8 @@ public class PushArgumentsValidatorTests
 
         var validationResult = _validator.Validate(pushArguments);
 
-        validationResult.IsValid.Should().BeFalse();
-        validationResult.Errors.Should()
-            .ContainSingle(error => error.PropertyName == nameof(pushArguments.Directory)
+        validationResult.IsValid.ShouldBeFalse();
+        validationResult.Errors.ShouldContain(error => error.PropertyName == nameof(pushArguments.Directory)
                                     && error.ErrorMessage ==
                                     $"Directory {pushArguments.Directory!.FullName} does not exist");
     }
@@ -110,9 +106,8 @@ public class PushArgumentsValidatorTests
 
         var validationResult = _validator.Validate(arguments);
 
-        validationResult.IsValid.Should().BeFalse();
-        validationResult.Errors.Should()
-            .ContainSingle(error => error.PropertyName == nameof(PushArguments.Solution));
+        validationResult.IsValid.ShouldBeFalse();
+        validationResult.Errors.ShouldContain(error => error.PropertyName == nameof(PushArguments.Solution));
     }
 
     [Fact]
@@ -128,6 +123,6 @@ public class PushArgumentsValidatorTests
 
         var validationResult = _validator.Validate(arguments);
 
-        validationResult.IsValid.Should().BeTrue();
+        validationResult.IsValid.ShouldBeTrue();
     }
 }

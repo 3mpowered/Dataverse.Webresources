@@ -5,10 +5,10 @@ using CliWrap.Exceptions;
 using Empowered.Dataverse.Webresources.Init.Extensions;
 using Empowered.Dataverse.Webresources.Init.Model;
 using Empowered.Dataverse.Webresources.Init.Services;
-using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Shouldly;
 
 namespace Empowered.Dataverse.Webresources.Init.Tests.Services;
 
@@ -49,59 +49,58 @@ public class InitServiceTests
 
         var directory = await _initService.Init(options);
 
-        directory.GetDirectories().Should().ContainSingle(dir => dir.Name == "src");
+        directory.GetDirectories().ShouldContain(dir => dir.Name == "src");
         var sourceDirectory = directory.GetDirectories().Single(x => x.Name == "src");
-        sourceDirectory.GetDirectories().Should().ContainSingle(dir => dir.Name == "command");
-        sourceDirectory.GetDirectories().Should().ContainSingle(dir => dir.Name == "view");
-        sourceDirectory.GetDirectories().Should().ContainSingle(dir => dir.Name == "form");
+        sourceDirectory.GetDirectories().ShouldContain(dir => dir.Name == "command");
+        sourceDirectory.GetDirectories().ShouldContain(dir => dir.Name == "view");
+        sourceDirectory.GetDirectories().ShouldContain(dir => dir.Name == "form");
 
         var commandDirectory = sourceDirectory.GetDirectories().Single(x => x.Name == "command");
-        commandDirectory.GetFiles().Should().ContainSingle(file => file.Name == ".gitkeep");
+        commandDirectory.GetFiles().ShouldContain(file => file.Name == ".gitkeep");
 
         var viewDirectory = sourceDirectory.GetDirectories().Single(x => x.Name == "view");
-        viewDirectory.GetFiles().Should().ContainSingle(file => file.Name == "view.handler.ts");
+        viewDirectory.GetFiles().ShouldContain(file => file.Name == "view.handler.ts");
 
         var expectedViewHandler = Assembly.GetAssembly(typeof(IInitService))!
             .GetEmbeddedResource("view.handler.ts");
         _fileSystem.File.ReadAllText(Path.Combine(viewDirectory.FullName, "view.handler.ts"))
-            .Should().Be(expectedViewHandler);
+            .ShouldBe(expectedViewHandler);
 
         var formDirectory = sourceDirectory.GetDirectories().Single(x => x.Name == "form");
-        formDirectory.GetFiles().Should().ContainSingle(file => file.Name == "form.handler.ts");
+        formDirectory.GetFiles().ShouldContain(file => file.Name == "form.handler.ts");
 
         var expectedFormHandler = Assembly.GetAssembly(typeof(IInitService))!
             .GetEmbeddedResource("form.handler.ts");
         _fileSystem.File.ReadAllText(Path.Combine(formDirectory.FullName, "form.handler.ts"))
-            .Should()
-            .Be(expectedFormHandler);
+            .ShouldBe(expectedFormHandler);
 
-        directory.GetFiles().Should().ContainSingle(file => file.Name == "package.json");
+        directory.GetFiles().ShouldContain(file => file.Name == "package.json");
         var packageJson = directory.GetFiles().Single(file => file.Name == "package.json");
         var expectedPackageJson = Assembly.GetAssembly(typeof(IInitService))!
             .GetEmbeddedResource("package.json")
             .Replace("<project>", options.Project)
             .Replace("<author>", options.Author)
             .Replace("<repository>", options.Repository);
-        _fileSystem.File.ReadAllText(packageJson.FullName).Should().Be(expectedPackageJson);
+        _fileSystem.File.ReadAllText(packageJson.FullName).ShouldBe(expectedPackageJson);
 
-        directory.GetFiles().Should().ContainSingle(file => file.Name == "webpack.config.js");
+        directory.GetFiles().ShouldContain(file => file.Name == "webpack.config.js");
         var webpackConfig = directory.GetFiles().Single(file => file.Name == "webpack.config.js");
         var expectedWebpackConfig = Assembly.GetAssembly(typeof(IInitService))!
             .GetEmbeddedResource("webpack.config.js")
             .Replace("<globalNamespace>", options.GlobalNamespace);
-        _fileSystem.File.ReadAllText(webpackConfig.FullName).Should().Be(expectedWebpackConfig);
+        _fileSystem.File.ReadAllText(webpackConfig.FullName).ShouldBe(expectedWebpackConfig);
 
-        directory.GetFiles().Should().ContainSingle(file => file.Name == "tsconfig.json");
+        directory.GetFiles().ShouldContain(file => file.Name == "tsconfig.json");
         var tsconfig = directory.GetFiles().Single(file => file.Name == "tsconfig.json");
         var expectedTsconfig = Assembly.GetAssembly(typeof(IInitService))!
             .GetEmbeddedResource("tsconfig.json");
-        _fileSystem.File.ReadAllText(tsconfig.FullName).Should().Be(expectedTsconfig);
+        _fileSystem.File.ReadAllText(tsconfig.FullName).ShouldBe(expectedTsconfig);
 
-        directory.GetFiles().Should().ContainSingle(file => file.Name == ".gitignore");
+        directory.GetFiles().ShouldContain(file => file.Name == ".gitignore");
         var gitignore = directory.GetFiles().Single(file => file.Name == ".gitignore");
         var expectedGitIgnore = Assembly.GetAssembly(typeof(IInitService))!
             .GetEmbeddedResource(".gitignore");
-        _fileSystem.File.ReadAllText(gitignore.FullName).Should().Be(expectedGitIgnore);
+        _fileSystem.File.ReadAllText(gitignore.FullName).ShouldBe(expectedGitIgnore);
     }
 
     [Fact]
@@ -132,15 +131,15 @@ public class InitServiceTests
 
         var directory = await _initService.Init(options);
 
-        directory.GetDirectories().Should().ContainSingle(dir => dir.Name == "src"
-                                                                 && dir.GetDirectories().Any());
+        directory.GetDirectories().ShouldContain(dir => dir.Name == "src"
+                                                        && dir.GetDirectories().Any());
         var expectedPackageJson = Assembly.GetAssembly(typeof(IInitService))!.GetEmbeddedResource("package.json")
             .Replace("<project>", options.Project)
             .Replace("<author>", options.Author)
             .Replace("<repository>", options.Repository);
-        directory.GetFiles().Should().ContainSingle(file => file.Name == "package.json");
+        directory.GetFiles().ShouldContain(file => file.Name == "package.json");
         var packageJson = await _fileSystem.File.ReadAllTextAsync(Path.Combine(baseDir, "package.json"));
-        packageJson.Should().Be(expectedPackageJson);
+        packageJson.ShouldBe(expectedPackageJson);
     }
 
     [Fact]
@@ -171,15 +170,15 @@ public class InitServiceTests
 
         var directory = await _initService.Init(options);
 
-        directory.GetDirectories().Should().ContainSingle(dir => dir.Name == "src"
-                                                                 && dir.GetDirectories().Any());
-        directory.GetFiles().Should().ContainSingle(file => file.Name == "package.json");
+        directory.GetDirectories().ShouldContain(dir => dir.Name == "src"
+                                                        && dir.GetDirectories().Any());
+        directory.GetFiles().ShouldContain(file => file.Name == "package.json");
         var packageJson = await _fileSystem.File.ReadAllTextAsync(Path.Combine(baseDir, "package.json"));
-        packageJson.Should().Be(string.Empty);
+        packageJson.ShouldBe(string.Empty);
     }
 
     [Fact]
-    public void ShouldThrowOnNpmInstallError()
+    public async Task ShouldThrowOnNpmInstallError()
     {
         var baseDir = Path.GetTempPath();
         _fileSystem.Directory.CreateDirectory(baseDir);
@@ -197,15 +196,14 @@ public class InitServiceTests
         var innerException = new CommandExecutionException(Cli.Wrap("npm"), 1, "error");
         _cliWrapper.NpmInstall(Arg.Any<string>()).ThrowsForAnyArgs(innerException);
 
-        Action actor = () => _initService.Init(options).GetAwaiter().GetResult();
+        var exception =
+            await Should.ThrowAsync<InvalidOperationException>(async () => await _initService.Init(options));
 
-        actor
-            .Should()
-            .ThrowExactly<InvalidOperationException>()
-            .WithMessage(
-                $"Couldn't successfully run the npm install command with error message {innerException.Message}. Please manually validate the generated project.")
-            .WithInnerException(innerException.GetType())
-            .WithMessage(innerException.Message);
+        exception.Message.ShouldStartWith(
+            $"Couldn't successfully run the npm install command with error message {innerException.Message}. Please manually validate the generated project.");
+        exception.InnerException.ShouldNotBeNull();
+        exception.InnerException.GetType().ShouldBe(innerException.GetType());
+        exception.InnerException.Message.ShouldStartWith(innerException.Message);
     }
 
     [Fact]
@@ -229,15 +227,14 @@ public class InitServiceTests
         var innerException = new CommandExecutionException(Cli.Wrap("npm"), 1, "error");
         _cliWrapper.NpmUpgradeDependencies(Arg.Any<string>()).ThrowsForAnyArgs(innerException);
 
-        Action actor = () => _initService.Init(options).GetAwaiter().GetResult();
+        var exception =
+            Should.Throw<InvalidOperationException>(() => _initService.Init(options).GetAwaiter().GetResult());
 
-        actor
-            .Should()
-            .ThrowExactly<InvalidOperationException>()
-            .WithMessage(
-                $"Failed to upgrade project dependencies for project {options.Project} with exit code {innerException.ExitCode} and message {innerException.Message}")
-            .WithInnerException(innerException.GetType())
-            .WithMessage(innerException.Message);
+        exception.Message.ShouldStartWith(
+            $"Failed to upgrade project dependencies for project {options.Project} with exit code {innerException.ExitCode} and message {innerException.Message}");
+        exception.InnerException.ShouldNotBeNull();
+        exception.InnerException.GetType().ShouldBe(innerException.GetType());
+        exception.InnerException.Message.ShouldStartWith(innerException.Message);
     }
 
     [Fact]
@@ -263,15 +260,14 @@ public class InitServiceTests
         var innerException = new CommandExecutionException(Cli.Wrap("code"), 1, "error");
         _cliWrapper.VsCodeOpen(Arg.Any<string>()).ThrowsForAnyArgs(innerException);
 
-        Action actor = () => _initService.Init(options).GetAwaiter().GetResult();
+        var exception =
+            Should.Throw<InvalidOperationException>(() => _initService.Init(options).GetAwaiter().GetResult());
 
-        actor
-            .Should()
-            .ThrowExactly<InvalidOperationException>()
-            .WithMessage(
-                $"Opening project directory {options.Directory} in visual studio code failed with error: {innerException.Message}")
-            .WithInnerException(innerException.GetType())
-            .WithMessage(innerException.Message);
+        exception.Message.ShouldStartWith(
+            $"Opening project directory {options.Directory} in visual studio code failed with error: {innerException.Message}");
+        exception.InnerException.ShouldNotBeNull();
+        exception.InnerException.GetType().ShouldBe(innerException.GetType());
+        exception.InnerException.Message.ShouldStartWith(innerException.Message);
     }
 
     [Fact]
@@ -295,7 +291,7 @@ public class InitServiceTests
 
         var directoryInfo = await _initService.Init(options);
 
-        directoryInfo.Should().NotBeNull();
+        directoryInfo.ShouldNotBeNull();
         await _cliWrapper.DidNotReceive().NpmUpgradeDependencies(Arg.Any<string>());
     }
 }

@@ -1,9 +1,9 @@
 ﻿using Empowered.Dataverse.Webresources.Push.Extensions;
 using Empowered.Dataverse.Webresources.Push.Services;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xrm.Sdk;
 using NSubstitute;
+using Shouldly;
 
 namespace Empowered.Dataverse.Webresources.Push.Tests.Extensions;
 
@@ -19,6 +19,6 @@ public class ServiceCollectionExtensionsTests
             .BuildServiceProvider();
 
         var service = serviceProvider.GetRequiredService<IPushService>();
-        service.Should().NotBeNull();
+        service.ShouldNotBeNull();
     }
 }

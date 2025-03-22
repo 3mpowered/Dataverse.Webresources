@@ -1,8 +1,8 @@
 using System.IO.Abstractions.TestingHelpers;
 using Empowered.Dataverse.Webresources.Push.Model;
 using Empowered.Dataverse.Webresources.Push.Services;
-using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
+using Shouldly;
 
 namespace Empowered.Dataverse.Webresources.Push.Tests.Services;
 
@@ -28,11 +28,9 @@ public class FileServiceTests
             Solution = "customizations",
             IncludeSubDirectories = false
         };
-        Action actor = () => _fileService.GetWebresourceFiles(options);
+        var exception = Should.Throw<ArgumentException>(() => _fileService.GetWebresourceFiles(options));
 
-        actor.Should()
-            .ThrowExactly<ArgumentException>()
-            .WithParameterName(nameof(options));
+        exception.ParamName.ShouldBe(nameof(options));
     }
 
     [Fact]
@@ -65,10 +63,10 @@ public class FileServiceTests
         };
         var files = _fileService.GetWebresourceFiles(options);
 
-        files.Should()
-            .HaveCount(3)
-            .And
-            .OnlyContain(file => fileExtensions.Contains(file.FileExtension));
+        files.ShouldNotBeNull()
+            .ShouldNotBeEmpty();
+        files.Count.ShouldBe(3);
+        files.ShouldContain(file => fileExtensions.Contains(file.FileExtension));
     }
 
     [Fact]
@@ -101,10 +99,9 @@ public class FileServiceTests
         };
         var files = _fileService.GetWebresourceFiles(options);
 
-        files.Should()
-            .HaveCount(3)
-            .And
-            .OnlyContain(file => fileExtensions.Select(extension => $".{extension}").Contains(file.FileExtension));
+        files.ShouldNotBeNull().ShouldNotBeEmpty();
+        files.Count.ShouldBe(3);
+        files.ShouldContain(file => fileExtensions.Select(extension => $".{extension}").Contains(file.FileExtension));
     }
 
     [Fact]
@@ -133,13 +130,10 @@ public class FileServiceTests
 
         var files = _fileService.GetWebresourceFiles(options);
 
-        files
-            .Should()
-            .HaveCount(2)
-            .And
-            .ContainSingle(file => file.FilePath == accountFormFile)
-            .And
-            .ContainSingle(file => file.FilePath == accountCommandFile);
+        files.ShouldNotBeNull().ShouldNotBeEmpty();
+        files.Count.ShouldBe(2);
+        files.ShouldContain(file => file.FilePath == accountFormFile);
+        files.ShouldContain(file => file.FilePath == accountCommandFile);
     }
 
     [Fact]
@@ -168,16 +162,14 @@ public class FileServiceTests
         };
 
         var files = _fileService.GetWebresourceFiles(options);
-
-        files.Should().HaveCount(2);
-        files.Should()
-            .ContainSingle(file =>
-                file.FileName == "account.form.js" &&
-                file.UniqueName == $"{options.PublisherPrefix}_/form/account.form.js");
-        files.Should()
-            .ContainSingle(file =>
-                file.FileName == "account.command.js" &&
-                file.UniqueName == $"{options.PublisherPrefix}_/command/account.command.js");
+        files.ShouldNotBeNull().ShouldNotBeEmpty();
+        files.Count.ShouldBe(2);
+        files.ShouldContain(file =>
+            file.FileName == "account.form.js" &&
+            file.UniqueName == $"{options.PublisherPrefix}_/form/account.form.js");
+        files.ShouldContain(file =>
+            file.FileName == "account.command.js" &&
+            file.UniqueName == $"{options.PublisherPrefix}_/command/account.command.js");
     }
 
 
@@ -209,12 +201,11 @@ public class FileServiceTests
 
         var files = _fileService.GetWebresourceFiles(options);
 
-        files.Should().HaveCount(2);
-        files.Should()
-            .ContainSingle(file => file.FileName == "account.form.js" && file.UniqueName ==
+        files.ShouldNotBeNull().ShouldNotBeEmpty();
+        files.Count.ShouldBe(2);
+        files.ShouldContain(file => file.FileName == "account.form.js" && file.UniqueName ==
                 $"{options.PublisherPrefix}_/{options.WebresourcePrefix}/form/account.form.js");
-        files.Should()
-            .ContainSingle(file => file.FileName == "account.command.js" && file.UniqueName ==
+        files.ShouldContain(file => file.FileName == "account.command.js" && file.UniqueName ==
                 $"{options.PublisherPrefix}_/{options.WebresourcePrefix}/command/account.command.js");
     }
 
@@ -245,12 +236,11 @@ public class FileServiceTests
 
         var files = _fileService.GetWebresourceFiles(options);
 
-        files.Should().HaveCount(2);
-        files.Should()
-            .ContainSingle(file => file.FileName == "account.form.js" && file.UniqueName ==
+        files.ShouldNotBeNull().ShouldNotBeEmpty();
+        files.Count.ShouldBe(2);
+        files.ShouldContain(file => file.FileName == "account.form.js" && file.UniqueName ==
                 $"{options.PublisherPrefix}_{options.WebresourcePrefix}form/account.form.js");
-        files.Should()
-            .ContainSingle(file => file.FileName == "account.command.js" && file.UniqueName ==
+        files.ShouldContain(file => file.FileName == "account.command.js" && file.UniqueName ==
                 $"{options.PublisherPrefix}_{options.WebresourcePrefix}command/account.command.js");
     }
 }

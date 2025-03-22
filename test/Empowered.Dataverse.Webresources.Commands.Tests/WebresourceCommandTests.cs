@@ -7,8 +7,8 @@ using Empowered.Dataverse.Webresources.Init.Model;
 using Empowered.Dataverse.Webresources.Init.Services;
 using Empowered.Dataverse.Webresources.Push.Model;
 using Empowered.Dataverse.Webresources.Push.Services;
-using FluentAssertions;
 using NSubstitute;
+using Shouldly;
 using Spectre.Console;
 
 namespace Empowered.Dataverse.Webresources.Commands.Tests;
@@ -32,7 +32,7 @@ public class WebresourceCommandTests
     }
 
     [Fact]
-    public async Task ShouldWriteOptionFileIfPersistConfigurationIsSet()
+    public void ShouldWriteOptionFileIfPersistConfigurationIsSet()
     {
         var pushArguments = new PushArguments
         {
@@ -48,9 +48,9 @@ public class WebresourceCommandTests
         _optionWriter.Write(Arg.Any<PushOptions>(), pushArguments.PersistConfiguration)
             .Returns(new FileInfoWrapper(new MockFileSystem(), pushArguments.PersistConfiguration));
 
-        var result = await _webresourceCommand.Push(pushArguments);
+        var result = _webresourceCommand.Push(pushArguments);
 
-        result.Should().Be(await ExitCodes.Success);
+        result.ShouldBe(ExitCodes.Success);
         _optionWriter.Received(1).Write(Arg.Any<PushOptions>(), pushArguments.PersistConfiguration);
     }
 
@@ -73,7 +73,7 @@ public class WebresourceCommandTests
 
         var result = await _webresourceCommand.Init(arguments);
 
-        result.Should().Be(await ExitCodes.Success);
+        result.ShouldBe(ExitCodes.Success);
         await _initService.Received(1).Init(Arg.Any<InitOptions>());
     }
 }

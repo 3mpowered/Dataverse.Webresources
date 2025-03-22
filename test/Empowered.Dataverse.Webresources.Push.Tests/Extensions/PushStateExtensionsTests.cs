@@ -1,6 +1,6 @@
 ﻿using Empowered.Dataverse.Webresources.Push.Extensions;
 using Empowered.Dataverse.Webresources.Push.Model;
-using FluentAssertions;
+using Shouldly;
 
 namespace Empowered.Dataverse.Webresources.Push.Tests.Extensions;
 
@@ -12,17 +12,16 @@ public class PushStateExtensionsTests
     [InlineData(PushState.Created, "Created")]
     public void ShouldFormatPushStateCorrectly(PushState pushState, string expectedFormat)
     {
-        pushState.Format().Should().Be(expectedFormat);
+        pushState.Format().ShouldBe(expectedFormat);
     }
 
     [Fact]
     public void ShouldThrowOnInvalidPushStateForFormat()
     {
         const PushState pushState = (PushState)999;
-        Action actor = () => { pushState.Format(); };
+        var exception = Should.Throw<ArgumentOutOfRangeException>(() => { pushState.Format(); });
 
-        actor.Should().Throw<ArgumentOutOfRangeException>()
-            .WithParameterName(nameof(pushState))
-            .And.ActualValue.Should().Be(pushState);
+        exception.ParamName.ShouldBe(nameof(pushState));
+        exception.ActualValue.ShouldBe(pushState);
     }
 }

@@ -1,12 +1,12 @@
 ﻿using Empowered.Dataverse.Webresources.Model;
 using Empowered.Dataverse.Webresources.Push.Model;
 using Empowered.Dataverse.Webresources.Push.Services;
-using FluentAssertions;
 using Microsoft.Crm.Sdk.Messages;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using NSubstitute;
+using Shouldly;
 
 namespace Empowered.Dataverse.Webresources.Push.Tests.Services;
 
@@ -47,12 +47,12 @@ public class DataverseServiceTests
 
         var result = _dataverseService.GetSolution(solutionName);
 
-        result.Should().NotBeNull();
-        result.Id.Should().Be(solution.Id);
-        result.UniqueName.Should().Be(solutionName);
-        result.FriendlyName.Should().Be(solution.FriendlyName);
-        result.PublisherId.Should().NotBeNull();
-        result.PublisherId.Id.Should().Be(solution.PublisherId.Id);
+        result.ShouldNotBeNull();
+        result.Id.ShouldBe(solution.Id);
+        result.UniqueName.ShouldBe(solutionName);
+        result.FriendlyName.ShouldBe(solution.FriendlyName);
+        result.PublisherId.ShouldNotBeNull();
+        result.PublisherId.Id.ShouldBe(solution.PublisherId.Id);
     }
 
     [Fact]
@@ -64,11 +64,9 @@ public class DataverseServiceTests
         });
 
         const string solutionName = "not_found";
-        Action actor = () => _dataverseService.GetSolution(solutionName);
+        var exception = Should.Throw<ArgumentException>(() => _dataverseService.GetSolution(solutionName));
 
-        actor.Should()
-            .ThrowExactly<ArgumentException>()
-            .WithParameterName(nameof(solutionName));
+        exception.ParamName.ShouldBe(nameof(solutionName));
     }
 
     [Fact]
@@ -88,11 +86,11 @@ public class DataverseServiceTests
 
         var result = _dataverseService.GetPublisher(publisherReference);
 
-        result.Should().NotBeNull();
-        result.Id.Should().Be(publisher.Id);
-        result.CustomizationPrefix.Should().Be(publisher.CustomizationPrefix);
-        result.UniqueName.Should().Be(publisher.UniqueName);
-        result.FriendlyName.Should().Be(publisher.FriendlyName);
+        result.ShouldNotBeNull();
+        result.Id.ShouldBe(publisher.Id);
+        result.CustomizationPrefix.ShouldBe(publisher.CustomizationPrefix);
+        result.UniqueName.ShouldBe(publisher.UniqueName);
+        result.FriendlyName.ShouldBe(publisher.FriendlyName);
     }
 
     [Fact]
@@ -112,11 +110,11 @@ public class DataverseServiceTests
 
         var result = _dataverseService.GetPublisher(publisher.CustomizationPrefix);
 
-        result.Should().NotBeNull();
-        result.Id.Should().Be(publisher.Id);
-        result.CustomizationPrefix.Should().Be(publisher.CustomizationPrefix);
-        result.UniqueName.Should().Be(publisher.UniqueName);
-        result.FriendlyName.Should().Be(publisher.FriendlyName);
+        result.ShouldNotBeNull();
+        result.Id.ShouldBe(publisher.Id);
+        result.CustomizationPrefix.ShouldBe(publisher.CustomizationPrefix);
+        result.UniqueName.ShouldBe(publisher.UniqueName);
+        result.FriendlyName.ShouldBe(publisher.FriendlyName);
     }
 
     [Fact]
@@ -135,11 +133,8 @@ public class DataverseServiceTests
             .ReturnsForAnyArgs(new EntityCollection());
         var customizationPrefix = publisher.CustomizationPrefix;
 
-        var actor = () => _dataverseService.GetPublisher(customizationPrefix);
-        actor
-            .Should()
-            .ThrowExactly<ArgumentException>()
-            .WithParameterName(nameof(customizationPrefix));
+        var exception = Should.Throw<ArgumentException>(() => _dataverseService.GetPublisher(customizationPrefix));
+        exception.ParamName.ShouldBe(nameof(customizationPrefix));
     }
 
     [Fact]
@@ -163,10 +158,10 @@ public class DataverseServiceTests
         );
         var pushResult = _dataverseService.UpsertWebresource(webresourceFile, options);
 
-        pushResult.Should().NotBeNull();
-        pushResult.PushState.Should().Be(PushState.Created);
-        pushResult.WebresourceReference.Should().NotBeNull();
-        pushResult.WebresourceReference.Id.Should().Be(webresourceId);
+        pushResult.ShouldNotBeNull();
+        pushResult.PushState.ShouldBe(PushState.Created);
+        pushResult.WebresourceReference.ShouldNotBeNull();
+        pushResult.WebresourceReference.Id.ShouldBe(webresourceId);
     }
 
 
@@ -208,10 +203,10 @@ public class DataverseServiceTests
         );
         var pushResult = _dataverseService.UpsertWebresource(webresourceFile, options);
 
-        pushResult.Should().NotBeNull();
-        pushResult.PushState.Should().Be(PushState.Updated);
-        pushResult.WebresourceReference.Should().NotBeNull();
-        pushResult.WebresourceReference.Id.Should().Be(webresourceId);
+        pushResult.ShouldNotBeNull();
+        pushResult.PushState.ShouldBe(PushState.Updated);
+        pushResult.WebresourceReference.ShouldNotBeNull();
+        pushResult.WebresourceReference.Id.ShouldBe(webresourceId);
     }
 
     [Fact]
@@ -250,10 +245,9 @@ public class DataverseServiceTests
             uniqueName,
             Convert.ToBase64String("function onLoad(context) { }"u8.ToArray())
         );
-        Action actor = () => _dataverseService.UpsertWebresource(webresourceFile, options);
-        actor.Should()
-            .ThrowExactly<ArgumentException>()
-            .WithParameterName(nameof(webresourceFile));
+        var exception =
+            Should.Throw<ArgumentException>(() => _dataverseService.UpsertWebresource(webresourceFile, options));
+        exception.ParamName.ShouldBe(nameof(webresourceFile));
     }
 
     [Fact]
@@ -295,10 +289,10 @@ public class DataverseServiceTests
         );
         var pushResult = _dataverseService.UpsertWebresource(webresourceFile, options);
 
-        pushResult.Should().NotBeNull();
-        pushResult.PushState.Should().Be(PushState.Updated);
-        pushResult.WebresourceReference.Should().NotBeNull();
-        pushResult.WebresourceReference.Id.Should().Be(webresourceId);
+        pushResult.ShouldNotBeNull();
+        pushResult.PushState.ShouldBe(PushState.Updated);
+        pushResult.WebresourceReference.ShouldNotBeNull();
+        pushResult.WebresourceReference.Id.ShouldBe(webresourceId);
     }
 
     [Fact]
@@ -336,10 +330,9 @@ public class DataverseServiceTests
             uniqueName,
             Convert.ToBase64String("function onLoad(context) { }"u8.ToArray())
         );
-        Action actor = () => _dataverseService.UpsertWebresource(webresourceFile, options);
-        actor.Should()
-            .ThrowExactly<ArgumentException>()
-            .WithParameterName(nameof(webresourceFile));
+        var exception =
+            Should.Throw<ArgumentException>(() => _dataverseService.UpsertWebresource(webresourceFile, options));
+        exception.ParamName.ShouldBe(nameof(webresourceFile));
     }
 
     [Theory]
@@ -389,12 +382,12 @@ public class DataverseServiceTests
         );
         var pushResult = _dataverseService.UpsertWebresource(webresourceFile, options);
 
-        pushResult.Should().NotBeNull();
-        pushResult.PushState.Should().Be(PushState.Created);
-        pushResult.WebresourceReference.Should().NotBeNull();
-        pushResult.WebresourceReference.Id.Should().Be(webresourceId);
-        webresource.Should().NotBeNull();
-        webresource!.WebResourceType.Should().Be(webresourceType);
+        pushResult.ShouldNotBeNull();
+        pushResult.PushState.ShouldBe(PushState.Created);
+        pushResult.WebresourceReference.ShouldNotBeNull();
+        pushResult.WebresourceReference.Id.ShouldBe(webresourceId);
+        webresource.ShouldNotBeNull();
+        webresource!.WebResourceType.ShouldBe(webresourceType);
     }
 
     [Fact]
@@ -437,10 +430,10 @@ public class DataverseServiceTests
 
         var pushResult = _dataverseService.UpsertWebresource(webresourceFile, options);
 
-        pushResult.Should().NotBeNull();
-        pushResult.PushState.Should().Be(PushState.Uptodate);
-        pushResult.WebresourceReference.Should().NotBeNull();
-        pushResult.WebresourceReference.Id.Should().Be(webresourceId);
+        pushResult.ShouldNotBeNull();
+        pushResult.PushState.ShouldBe(PushState.Uptodate);
+        pushResult.WebresourceReference.ShouldNotBeNull();
+        pushResult.WebresourceReference.Id.ShouldBe(webresourceId);
     }
 
     [Fact]
@@ -485,10 +478,10 @@ public class DataverseServiceTests
 
         var pushResult = _dataverseService.UpsertWebresource(webresourceFile, options);
 
-        pushResult.Should().NotBeNull();
-        pushResult.PushState.Should().Be(PushState.Updated);
-        pushResult.WebresourceReference.Should().NotBeNull();
-        pushResult.WebresourceReference.Id.Should().Be(webresourceId);
+        pushResult.ShouldNotBeNull();
+        pushResult.PushState.ShouldBe(PushState.Updated);
+        pushResult.WebresourceReference.ShouldNotBeNull();
+        pushResult.WebresourceReference.Id.ShouldBe(webresourceId);
     }
 
     [Fact]
@@ -521,8 +514,8 @@ public class DataverseServiceTests
         var addToSolutionResult =
             _dataverseService.AddToSolution(webresource.ToEntityReference(), solution.ToEntityReference());
 
-        addToSolutionResult.Should().NotBeNull();
-        addToSolutionResult.SolutionComponent.Id.Should().Be(solutionComponent.Id);
+        addToSolutionResult.ShouldNotBeNull();
+        addToSolutionResult.SolutionComponent.Id.ShouldBe(solutionComponent.Id);
     }
 
     [Fact]
@@ -554,8 +547,8 @@ public class DataverseServiceTests
         var addToSolutionResult =
             _dataverseService.AddToSolution(webresource.ToEntityReference(), solution.ToEntityReference());
 
-        addToSolutionResult.Should().NotBeNull();
-        addToSolutionResult.SolutionComponent.Id.Should().Be(addSolutionComponentResponse.id);
+        addToSolutionResult.ShouldNotBeNull();
+        addToSolutionResult.SolutionComponent.Id.ShouldBe(addSolutionComponentResponse.id);
     }
 
     [Fact]

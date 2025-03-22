@@ -4,11 +4,11 @@ using Empowered.Dataverse.Webresources.Push.Events;
 using Empowered.Dataverse.Webresources.Push.Model;
 using Empowered.Dataverse.Webresources.Push.Services;
 using Empowered.Reactive.Extensions;
-using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Xrm.Sdk;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Shouldly;
 
 namespace Empowered.Dataverse.Webresources.Push.Tests.Services;
 
@@ -90,8 +90,9 @@ public class PushServiceTests
 
         var results = _pushService.PushWebresources(options);
 
-        results.Should().HaveCount(1);
-        results.Should().ContainSingle(result =>
+        results.ShouldNotBeNull().ShouldNotBeEmpty();
+        results.Count.ShouldBe(1);
+        results.ShouldContain(result =>
             result.PushState == pushResult.PushState &&
             result.WebresourceReference.Id == pushResult.WebresourceReference.Id);
         _dataverseService
@@ -164,8 +165,9 @@ public class PushServiceTests
 
         var results = _pushService.PushWebresources(options);
 
-        results.Should().HaveCount(1);
-        results.Should().ContainSingle(result =>
+        results.ShouldNotBeNull().ShouldNotBeEmpty();
+        results.Count.ShouldBe(1);
+        results.ShouldContain(result =>
             result.PushState == pushResult.PushState &&
             result.WebresourceReference.Id == pushResult.WebresourceReference.Id);
         _dataverseService
@@ -236,8 +238,9 @@ public class PushServiceTests
 
         var results = _pushService.PushWebresources(options);
 
-        results.Should().HaveCount(1);
-        results.Should().ContainSingle(result =>
+        results.ShouldNotBeNull().ShouldNotBeEmpty();
+        results.Count.ShouldBe(1);
+        results.ShouldContain(result =>
             result.PushState == pushResult.PushState &&
             result.WebresourceReference.Id == pushResult.WebresourceReference.Id);
 
@@ -318,8 +321,9 @@ public class PushServiceTests
 
         var results = _pushService.PushWebresources(options);
 
-        results.Should().HaveCount(1);
-        results.Should().ContainSingle(result =>
+        results.ShouldNotBeNull().ShouldNotBeEmpty();
+        results.Count.ShouldBe(1);
+        results.ShouldContain(result =>
             result.PushState == pushResult.PushState &&
             result.WebresourceReference.Id == pushResult.WebresourceReference.Id);
         _dataverseService
@@ -387,8 +391,9 @@ public class PushServiceTests
 
         var results = _pushService.PushWebresources(options);
 
-        results.Should().HaveCount(1);
-        results.Should().ContainSingle(result =>
+        results.ShouldNotBeNull().ShouldNotBeEmpty();
+        results.Count.ShouldBe(1);
+        results.ShouldContain(result =>
             result.PushState == pushResult.PushState &&
             result.WebresourceReference.Id == pushResult.WebresourceReference.Id);
         _dataverseService
@@ -429,13 +434,10 @@ public class PushServiceTests
             .GetPublisher(Arg.Any<EntityReference>())
             .ThrowsForAnyArgs(thrownException);
 
-        var actor = () =>
-            _pushService.PushWebresources(options);
+        var exception = Should.Throw<InvalidOperationException>(() =>
+            _pushService.PushWebresources(options));
 
-        actor
-            .Should()
-            .ThrowExactly<InvalidOperationException>()
-            .WithMessage(thrownException.Message);
+        exception.Message.ShouldBe(thrownException.Message);
         _observable
             .Received(1)
             .PublishError(thrownException);
@@ -460,13 +462,10 @@ public class PushServiceTests
             .GetSolution(Arg.Any<string>())
             .ThrowsForAnyArgs(thrownException);
 
-        var actor = () =>
-            _pushService.PushWebresources(options);
+        var exception = Should.Throw<InvalidOperationException>(() =>
+            _pushService.PushWebresources(options));
 
-        actor
-            .Should()
-            .ThrowExactly<InvalidOperationException>()
-            .WithMessage(thrownException.Message);
+        exception.Message.ShouldBe(thrownException.Message);
         _observable
             .Received(1)
             .PublishError(thrownException);
