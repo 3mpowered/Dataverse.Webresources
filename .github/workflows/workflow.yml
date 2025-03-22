@@ -21,6 +21,7 @@ jobs:
       issues: write
     uses: 3mpowered/Github.Action.Workflows/.github/workflows/release.yml@main
     secrets: 
-      CI_GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
+      CI_GITHUB_APP_ID: ${{ secrets.CI_GITHUB_APP_ID }}
       NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      CI_GITHUB_SECRET: ${{ secret.CI_GITHUB_SECRET }}
     if: ${{ github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'beta' || github.ref_name == 'alpha')}}
