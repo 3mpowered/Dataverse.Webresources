@@ -65,6 +65,20 @@ internal class OptionResolver(IFileSystem fileSystem, ILogger<OptionResolver> lo
                     nameof(arguments));
             }
 
+            if (!fileSystem.Path.IsPathRooted(configOptions.Directory) && configurationFile.Directory != null)
+            {
+                var absolutePath =
+                    fileSystem.Path.GetFullPath(configOptions.Directory, configurationFile.Directory.FullName);
+                logger.LogDebug(
+                    "Configuration directory {Directory} is a relative path. converting to absolute path {AbsolutePath} using configuration directory {ConfigurationDirectory}",
+                    configOptions.Directory, absolutePath, configurationFile.Directory.FullName);
+
+                configOptions = configOptions with
+                {
+                    Directory = absolutePath
+                };
+            }
+
             var mergedOptions = new PushOptions
             {
                 Directory = arguments.Directory?.FullName ?? configOptions.Directory,
@@ -77,6 +91,8 @@ internal class OptionResolver(IFileSystem fileSystem, ILogger<OptionResolver> lo
                 Publish = arguments.Publish ?? configOptions.Publish,
                 WebresourcePrefix = arguments.Prefix ?? configOptions.WebresourcePrefix,
                 IncludeSubDirectories = arguments.Recursive ?? configOptions.IncludeSubDirectories,
+                ConfigurationFilePath =
+                    arguments.PersistConfiguration?.FullName ?? arguments.Configuration.FullName,
             };
 
             return mergedOptions;

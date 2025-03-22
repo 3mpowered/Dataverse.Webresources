@@ -1,6 +1,7 @@
 ﻿using Empowered.CommandLine.Extensions.Extensions;
 using Empowered.Dataverse.Webresources.Init.Events;
 using Empowered.Dataverse.Webresources.Push.Events;
+using Empowered.Dataverse.Webresources.Push.Extensions;
 using Empowered.Dataverse.Webresources.Push.Model;
 using Empowered.Reactive.Extensions;
 using Empowered.Reactive.Extensions.Events;
